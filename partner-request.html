@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Become a Partner · Exhibition Radar</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<!-- From the Claude Design partner handoff (Oct 2026), "Partner Request v3",
+     adapted to the flow as it is (docs/PARTNERS.md): the gallery in the
+     person's own words (there's no list to pick from), POST
+     /api/partner/requests, then a thank-you. We reply ourselves; there are
+     no reference codes, confirm step or status lookup. -->
+<script>
+  (function () {
+    try {
+      var saved = (window.matchMedia("(max-width: 760px)").matches && !/ExhibitionRadarApp/.test(navigator.userAgent) && sessionStorage.getItem("er_app_preview") !== "1")
+          ? sessionStorage.getItem("er_theme") : localStorage.getItem("er_theme"); // the phone website: this visit's palette only (see index.html)
+      if (saved === "dark" || saved === "night") document.documentElement.dataset.theme = "dark";
+    } catch (e) { /* private mode: the page just starts light */ }
+  })();
+</script>
+<style>
+  :root {
+    --ink: #111111; --ink-sub: #555555; --ink-meta: #767676; --ink-faint: #8a8a8a; --link: #0000ff; --link-hover: #551a8b;
+    --alert: #b22211; --rule: #d8d8d8; --rule-strong: #a0a0a0; --ground: #ffffff; --panel: #ffffff;
+    --hand: 'Exhibition Radar Hand', Georgia, serif; --sans: Arial, Helvetica, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece9e2; --ink-sub: #d9d5cc; --ink-meta: #aeaaa1; --ink-faint: #97938a; --link: #a8c7ff; --link-hover: #cadcff;
+    --alert: #e8746a; --rule: rgba(255,255,255,0.14); --rule-strong: rgba(255,255,255,0.3); --ground: #151515; --panel: #1b1b1b;
+  }
+  @font-face { font-family: 'Exhibition Radar Hand'; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype"); }
+  html, body { margin: 0; background: var(--ground); }
+  body { min-height: 100vh; box-sizing: border-box; color: var(--ink); font-family: var(--sans); padding: 64px 14px 48px; display: flex; justify-content: center; align-items: flex-start; position: relative; }
+  a { color: var(--link); }
+  a:hover { color: var(--link-hover); }
+  [hidden] { display: none !important; }
+  input, button, textarea { font: inherit; }
+  .top { position: absolute; top: 20px; left: 20px; font-size: 12px; color: var(--ink-meta); text-decoration: none; }
+  .top:hover { color: var(--ink); text-decoration: underline; }
+  .card { width: 100%; max-width: 470px; box-sizing: border-box; background: var(--panel); border: 1px solid var(--rule);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08); padding: clamp(26px,7vw,44px) clamp(18px,6vw,44px) 34px; }
+  h1 { margin: 0 0 28px; text-align: center; font-family: var(--hand); font-weight: 400; font-size: 32px; line-height: 1.15; }
+  form { display: flex; flex-direction: column; gap: 22px; }
+  label { display: flex; flex-direction: column; gap: 7px; }
+  .cap { font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  input, textarea { width: 100%; box-sizing: border-box; background: none; border: none; border-bottom: 1px solid var(--rule); border-radius: 0;
+    padding: 0 0 8px; font-size: 15px; color: var(--ink); }
+  input:focus, textarea:focus { outline: none; border-color: var(--ink); }
+  input::placeholder, textarea::placeholder { color: var(--ink-faint); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 22px; }
+  .hint { font-size: 11.5px; line-height: 1.5; color: var(--ink-meta); }
+  /* The personal way in: a person, by email, rather than the form. */
+  .direct { border-top: 1px solid var(--rule); padding-top: 18px; font-size: 14px; line-height: 1.65; color: var(--ink-sub); text-wrap: pretty; }
+  .direct strong { display: block; color: var(--ink); font-weight: 700; margin-bottom: 2px; }
+  .err { font-size: 11.5px; color: var(--alert); }
+  .banner { border-left: 2px solid var(--alert); padding: 2px 0 2px 12px; font-size: 12.5px; line-height: 1.6; color: var(--alert); }
+  .btn { width: 100%; min-height: 48px; background: var(--ink); color: var(--ground); border: none; font-size: 13.5px; letter-spacing: 0.06em; cursor: pointer; }
+  .btn:hover { opacity: 0.82; }
+  .btn[disabled] { opacity: 0.5; cursor: default; }
+  .foot { text-align: center; font-size: 12.5px; line-height: 1.6; color: var(--ink-meta); }
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .done p { margin: 0 0 14px; font-size: 14px; line-height: 1.7; color: var(--ink-sub); text-align: center; text-wrap: pretty; }
+</style>
+</head>
+<body>
+  <a class="top" href="for-galleries.html">&larr; for galleries</a>
+  <div class="card">
+
+    <div id="ask">
+      <h1>Become a Partner</h1>
+      <form id="form" novalidate>
+        <label><span class="cap">Your name</span>
+          <input name="name" type="text" autocomplete="name" maxlength="120">
+          <span class="err" data-err="name" hidden></span></label>
+        <label><span class="cap">Your role</span>
+          <input name="role" type="text" autocomplete="organization-title" placeholder="Gallery manager" maxlength="120">
+          <span class="err" data-err="role" hidden></span></label>
+        <label><span class="cap">Your company email</span>
+          <input name="email" type="email" autocomplete="email" maxlength="254">
+          <span class="hint">Please use your company email, at your gallery's own domain. If you don't have one, we'll verify you through a DM from your gallery's Instagram account or a phone call.</span>
+          <span class="err" data-err="email" hidden></span></label>
+        <label><span class="cap">Your phone</span>
+          <input name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="+1 212 555 0100">
+          <span class="err" data-err="phone" hidden></span></label>
+        <label><span class="cap">Your gallery</span>
+          <input name="gallery" type="text" autocomplete="organization" maxlength="200">
+          <span class="err" data-err="gallery" hidden></span></label>
+        <label><span class="cap">City</span>
+          <input name="city" type="text" autocomplete="address-level2" maxlength="120">
+          <span class="err" data-err="city" hidden></span></label>
+        <div class="two">
+          <label><span class="cap">Gallery website</span>
+            <input name="site" type="url" inputmode="url" placeholder="yourgallery.com" maxlength="500">
+            <span class="err" data-err="site" hidden></span></label>
+          <label><span class="cap">Gallery Instagram</span>
+            <input name="instagram" type="text" placeholder="@yourgallery" maxlength="200" autocapitalize="off" spellcheck="false">
+            <span class="err" data-err="instagram" hidden></span></label>
+        </div>
+        <span class="hint">The gallery's website or its Instagram: one is enough.</span>
+        <!-- Left empty by people; filled in by bots, whose requests go nowhere. -->
+        <div class="trap" aria-hidden="true"><label>Nickname <input name="nickname" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <div class="banner" id="banner" hidden></div>
+        <button class="btn" type="submit" id="send">Request access</button>
+        <div class="direct">
+          <strong>Rather do it together?</strong>
+          Email us directly at <a href="mailto:exhibitionradar@gmail.com?subject=Partner%20access">exhibitionradar@gmail.com</a>
+          and we'll set up your gallery's listings with you.
+        </div>
+        <p class="foot">Already a partner? <a href="partner.html">Log in</a></p>
+      </form>
+    </div>
+
+    <div id="done" class="done" hidden>
+      <h1>Thank you</h1>
+      <p>We've got your request. A person at Exhibition Radar will reply to <strong id="done-email"></strong>, usually within a few days.</p>
+      <p>To keep listings safe, we give access once we know you're with the gallery: from your company email, or, if you used another address, through a DM from your gallery's Instagram account or a phone call.</p>
+      <p class="foot"><a href="/">Back to the radar</a></p>
+    </div>
+
+  </div>
+
+<script>
+(function () {
+  var API = location.hostname === "localhost" ? "http://localhost:5001" : "";
+  var form = document.getElementById("form");
+  var $ = function (id) { return document.getElementById(id); };
+
+  function fieldErr(name, msg) {
+    var el = form.querySelector('[data-err="' + name + '"]');
+    el.hidden = !msg; el.textContent = msg || "";
+  }
+  function banner(msg) { $("banner").hidden = !msg; $("banner").textContent = msg || ""; }
+  // A field's message goes as soon as it's filled in, not on the next press.
+  form.addEventListener("input", function (e) {
+    var el = e.target.name && form.querySelector('[data-err="' + e.target.name + '"]');
+    if (el && e.target.value.trim()) { el.hidden = true; el.textContent = ""; }
+  });
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var v = function (n) { return form.elements[n].value.trim(); };
+    var bad = false;
+    ["name", "role", "email", "phone", "gallery", "city", "site", "instagram"].forEach(function (n) { fieldErr(n, ""); });
+    banner("");
+    // Every field is needed (the owner, 8 Oct 2026): it's how we check who's asking.
+    // The one exception: the website or the Instagram will do.
+    var need = { name: "Please add your name.", role: "Please add your role at the gallery.", phone: "Please add a phone number we can call.",
+      gallery: "Please add your gallery's name.", city: "Please add the city." };
+    Object.keys(need).forEach(function (n) { if (!v(n)) { fieldErr(n, need[n]); bad = true; } });
+    // Website or Instagram: at least one (many spaces have only one of them).
+    if (!v("site") && !v("instagram")) { fieldErr("site", "Please add the gallery's website or Instagram."); bad = true; }
+    if (!v("email")) { fieldErr("email", "Please add your company email."); bad = true; }
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("email"))) { fieldErr("email", "That doesn't look like an email address."); bad = true; }
+    if (bad) return;
+    $("send").disabled = true;
+    try {
+      var res = await fetch(API + "/api/partner/requests", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: v("name"), role: v("role"), email: v("email"), phone: v("phone"), gallery: v("gallery"), city: v("city"),
+          website: v("site"), instagram: v("instagram"), nickname: form.elements.nickname.value
+        })
+      });
+      var body = await res.json().catch(function () { return {}; });
+      if (res.status === 429) { banner(body.error && /already got/i.test(body.error) ? body.error : "Too many tries. Wait a few minutes and try again."); return; }
+      if (!res.ok) { banner(body.error || "Something went wrong. Try again, or write to us."); return; }
+      $("done-email").textContent = v("email");
+      $("ask").hidden = true; $("done").hidden = false;
+      window.scrollTo(0, 0);
+    } catch (err) {
+      banner("Couldn't reach us just now. Try again, or write to exhibitionradar@gmail.com.");
+    } finally { $("send").disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

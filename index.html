@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Exhibition Radar app preview</title>
+<link rel="icon" href="favicon.png?v=2">
+<script>
+  // On a phone the app is the whole page; the frame is for a laptop or a projector.
+  if (window.matchMedia("(max-width: 760px)").matches) location.replace("app.html?app=1");
+</script>
+<style>
+  @font-face { font-family: "ER Hand"; src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype"); font-display: swap; }
+  :root { --ink: #111; --muted: #6b6b6b; --rule: #e4e4e4; --ground: #fff; --bezel: #111; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #f2f2f2; --muted: #9a9a9a; --rule: #2a2a2a; --ground: #0c0c0c; --bezel: #000; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  main { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 72px; padding: 32px 16px; }
+  .phone { width: 409px; height: 868px; max-height: calc(100vh - 64px); aspect-ratio: 409 / 868; padding: 8px;
+    border-radius: 56px; background: var(--bezel); box-shadow: 0 30px 60px rgba(0, 0, 0, .18); flex: none; }
+  .phone iframe { width: 100%; height: 100%; border: 0; border-radius: 48px; background: #fff; display: block; }
+  aside { max-width: 300px; }
+  h1 { font: 400 44px/1.05 "ER Hand", -apple-system, sans-serif; margin: 0 0 12px; }
+  p { margin: 0 0 16px; color: var(--muted); }
+  #qr { width: 168px; height: 168px; padding: 10px; background: #fff; border: 1px solid var(--rule); margin: 8px 0 10px; }
+  #qr canvas { display: none !important; }
+  #qr img { width: 100% !important; height: 100% !important; display: block; }
+  .small { font-size: 13px; }
+  a { color: inherit; }
+  @media (max-width: 980px) { aside { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="phone"><iframe src="app.html?app=1" title="Exhibition Radar app" allow="geolocation; clipboard-write; web-share"></iframe></div>
+  <aside>
+    <h1>Exhibition Radar</h1>
+    <p>The iPhone app, running in the browser on today's live listings. Tap around: the map, Discover, a show, your plan.</p>
+    <div id="qr" aria-label="QR code to open this preview on a phone"></div>
+    <p class="small">Scan to open it on your phone, or <a href="app.html?app=1">open it full screen</a>.</p>
+    <p class="small">A preview ahead of launch. Listings come from galleries' and museums' own public pages, updated daily.</p>
+  </aside>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  try { new QRCode(document.getElementById("qr"), { text: location.href.split("#")[0].replace(/index\.html$/, ""), width: 296, height: 296, correctLevel: QRCode.CorrectLevel.M }); }
+  catch (e) { document.getElementById("qr").style.display = "none"; }
+</script>
+</body>
+</html>

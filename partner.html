@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partners · Exhibition Radar</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<!-- A saved palette before the first paint, as on signup.html. -->
+<script>
+  (function () {
+    try {
+      var saved = (window.matchMedia("(max-width: 760px)").matches && !/ExhibitionRadarApp/.test(navigator.userAgent) && sessionStorage.getItem("er_app_preview") !== "1")
+          ? sessionStorage.getItem("er_theme") : localStorage.getItem("er_theme"); // the phone website: this visit's palette only (see index.html)
+      if (saved === "dark" || saved === "night") document.documentElement.dataset.theme = "dark";
+    } catch (e) { /* private mode: the page just starts light */ }
+  })();
+</script>
+<style>
+  /* Tokens mirror signup.html (and so index.html). */
+  :root {
+    --ink: #111111; --ink-sub: #555555; --ink-meta: #767676; --ink-faint: #8a8a8a;
+    --link: #0000ff; --link-hover: #551a8b; --alert: #b22211;
+    --flag: #8a5a00; --flag-ground: #fbf3df; --flag-rule: #e5cf98;
+    --rule: #d8d8d8; --rule-strong: #a0a0a0;
+    --ground: #ffffff; --panel: #ffffff; --ground-sel: #f0eee6;
+    --sans: Arial, Helvetica, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece9e2; --ink-sub: #d9d5cc; --ink-meta: #aeaaa1; --ink-faint: #97938a;
+    --link: #a8c7ff; --link-hover: #cadcff; --alert: #e8746a;
+    --flag: #f0c46a; --flag-ground: #2a2416; --flag-rule: #5c4a1f;
+    --rule: rgba(255,255,255,.14); --rule-strong: rgba(255,255,255,.3);
+    --ground: #151515; --panel: #1b1b1b; --ground-sel: #0f0f0f;
+  }
+  @font-face {
+    font-family: 'Exhibition Radar Hand'; font-style: normal; font-weight: 400; font-display: swap;
+    src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype");
+  }
+  html { background: var(--ground); }
+  body { margin: 0; min-height: 100vh; background: var(--ground); color: var(--ink); font-family: var(--sans); }
+  a { color: var(--link); }
+  a:hover { color: var(--link-hover); }
+  [hidden] { display: none !important; }
+
+  /* ---- Top bar ---- */
+  .bar {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    padding: 18px 28px; border-bottom: 1px solid var(--rule); background: var(--panel);
+  }
+  .mark { font-family: 'Exhibition Radar Hand', Georgia, serif; font-size: 22px; color: var(--ink); text-decoration: none; }
+  .mark small { font-family: var(--sans); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-left: 10px; }
+  .who { font-size: 12.5px; color: var(--ink-meta); display: flex; gap: 16px; align-items: baseline; }
+
+  /* ---- Cards (log in, set password, not a partner) ---- */
+  .gate { display: flex; justify-content: center; padding: 64px 20px; }
+  .card {
+    width: 100%; max-width: 430px; box-sizing: border-box; background: var(--panel);
+    border: 1px solid var(--rule); box-shadow: 0 18px 50px rgba(0,0,0,.10); padding: clamp(30px,7vw,44px) clamp(22px,7vw,44px) 40px;
+  }
+  .card .blurb + .blurb { margin-top: -14px; }
+  .cap-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .count { font-size: 11px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .count.ok { color: var(--ink); }
+  h1 { margin: 0 0 14px; font-weight: 400; font-size: 32px; line-height: 1.15; font-family: 'Exhibition Radar Hand', Georgia, serif; }
+  .card h1 { text-align: center; }
+  .blurb { margin: 0 0 26px; text-align: center; font-size: 13.5px; line-height: 1.7; color: var(--ink-meta); text-wrap: pretty; }
+  .fields { display: flex; flex-direction: column; gap: 22px; }
+  label.field { display: flex; flex-direction: column; gap: 7px; }
+  .cap { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  input[type="email"], input[type="password"], input[type="text"], input[type="url"], input[type="date"], select, textarea {
+    width: 100%; box-sizing: border-box; background: none; border: none; border-bottom: 1px solid var(--rule);
+    padding: 0 0 8px; border-radius: 0; font-family: var(--sans); font-size: 14px; color: var(--ink);
+  }
+  textarea { border: 1px solid var(--rule); padding: 10px; min-height: 120px; resize: vertical; line-height: 1.55; }
+  select { padding-bottom: 7px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); }
+  .form-err { border-left: 2px solid var(--alert); padding: 2px 0 2px 12px; font-size: 12.5px; line-height: 1.6; color: var(--alert); }
+  .btn {
+    display: inline-block; box-sizing: border-box; text-align: center; font-family: var(--sans); font-size: 13px;
+    letter-spacing: .06em; color: var(--ground); background: var(--ink); border: none; padding: 12px 22px; cursor: pointer;
+  }
+  .btn.wide { width: 100%; padding: 14px 26px; }
+  .btn:hover { opacity: .82; }
+  .btn[disabled] { opacity: .5; cursor: default; }
+  .btn.ghost { color: var(--ink); background: none; border: 1px solid var(--rule-strong); }
+  .linkish { background: none; border: none; padding: 0; cursor: pointer; font-family: var(--sans); font-size: 12.5px; color: var(--link); }
+  .linkish:hover { text-decoration: underline; }
+  .linkish.danger { color: var(--alert); }
+  .centered { text-align: center; font-size: 12.5px; color: var(--ink-meta); line-height: 1.6; }
+
+  /* ---- My exhibitions ---- */
+  main { max-width: 920px; margin: 0 auto; padding: 40px 28px 80px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 8px; }
+  .head h1 { margin: 0; }
+  .sub { font-size: 13px; color: var(--ink-meta); margin: 0 0 28px; line-height: 1.6; }
+  .note { font-size: 12.5px; line-height: 1.65; color: var(--ink-sub); background: var(--panel); border: 1px solid var(--rule); padding: 14px 18px; margin: 0 0 28px; }
+
+  .show { display: grid; grid-template-columns: clamp(72px,18vw,112px) minmax(0, 1fr) auto; gap: 18px; padding: 18px 0; border-top: 1px solid var(--rule); }
+  .show:last-child { border-bottom: 1px solid var(--rule); }
+  .thumb { width: clamp(72px,18vw,112px); height: clamp(54px,13.5vw,84px); object-fit: cover; background: var(--rule); display: block; }
+  .read { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .thumb.none { display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink-faint); }
+  .title { font-size: 15.5px; line-height: 1.35; margin: 0 0 3px; }
+  .meta { font-size: 12.5px; line-height: 1.6; color: var(--ink-meta); }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--rule); padding: 3px 6px; }
+  .acts { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+
+  /* The website now says something else: the partner chooses. */
+  .flag {
+    grid-column: 2 / -1; border: 1px solid var(--flag-rule); background: var(--flag-ground);
+    padding: 12px 14px; font-size: 12.5px; line-height: 1.6; color: var(--ink-sub);
+  }
+  .flag strong { color: var(--flag); font-weight: 600; display: block; margin-bottom: 6px; }
+  .flag .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; padding: 8px 0; border-top: 1px solid var(--flag-rule); align-items: center; }
+  .flag .item:first-of-type { border-top: none; padding-top: 2px; }
+  .flag .vals { min-width: 0; overflow-wrap: anywhere; }
+  .flag .choices { display: flex; gap: 14px; }
+  .flag .pics { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+  .flag figure { margin: 0; }
+  .flag figure img, .flag figure .none { display: block; width: 120px; height: 84px; object-fit: cover; background: var(--rule); }
+  .flag figcaption { font-size: 11px; color: var(--ink-meta); margin-top: 4px; }
+  .welcome { border: 1px solid var(--rule); padding: clamp(24px,5vw,36px); display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .welcome h2 { margin: 0; font-size: 24px; }
+  .welcome p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-sub); max-width: 52ch; }
+  .welcome .hint { margin-top: 2px; }
+  .back-soon { font-size: 12.5px; color: var(--ink-meta); }
+
+  h2 { font-weight: 400; font-size: 20px; margin: 44px 0 6px; font-family: 'Exhibition Radar Hand', Georgia, serif; }
+  .removed { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule); font-size: 13.5px; }
+  .empty { padding: 28px 0; font-size: 13px; color: var(--ink-meta); border-top: 1px solid var(--rule); }
+
+  /* ---- Edit / add / remove dialogs ---- */
+  dialog {
+    border: 1px solid var(--rule-strong); background: var(--panel); color: var(--ink); padding: 30px 32px;
+    width: calc(100% - 32px); max-width: 560px; box-sizing: border-box; max-height: calc(100vh - 40px);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.35); }
+  dialog h1 { font-size: 26px; margin-bottom: 20px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .img-row { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 14px; align-items: end; }
+  .img-row img, .img-row .img-none { width: 96px; height: 72px; object-fit: cover; background: var(--rule); display: block; }
+  .img-row .img-none { display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink-faint); }
+  .hint { font-size: 11.5px; color: var(--ink-meta); line-height: 1.5; }
+  .dlg-acts { display: flex; gap: 18px; align-items: center; margin-top: 26px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .bar { padding: 14px 16px; flex-wrap: wrap; }
+    main { padding: 28px 16px 60px; }
+    .gate { padding: 24px 16px; }
+    .card { padding: 32px 22px 30px; box-shadow: none; }
+    .show { grid-template-columns: clamp(72px,18vw,112px) minmax(0, 1fr); gap: 12px 14px; }
+    .acts { grid-column: 2; flex-direction: row; gap: 18px; justify-content: flex-start; }
+    .flag { grid-column: 1 / -1; }
+    .flag .item { grid-template-columns: 1fr; }
+    .two { grid-template-columns: 1fr; }
+    dialog { padding: 24px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="mark" href="/">Exhibition Radar<small>Partner portal</small></a>
+  <div class="who" id="who" hidden><span id="who-email"></span><button class="linkish" id="logout">Log out</button></div>
+</header>
+
+<!-- Log in -->
+<div class="gate" id="view-login" hidden>
+  <div class="card">
+    <h1>Partner login</h1>
+    <p class="blurb">For galleries and museums keeping their listings on the radar up to date.</p>
+    <form class="fields" id="login-form" novalidate>
+      <label class="field"><span class="cap">Email</span>
+        <input id="login-email" type="email" autocomplete="email" required></label>
+      <label class="field"><span class="cap">Password</span>
+        <input id="login-pw" type="password" autocomplete="current-password" required></label>
+      <div class="form-err" id="login-err" hidden></div>
+      <button class="btn wide" type="submit" id="login-btn">Log in</button>
+      <span class="centered">Want access for your gallery? <a href="for-galleries.html">Ask for partner access</a></span>
+    </form>
+  </div>
+</div>
+
+<!-- Set a password from the link /admin gave -->
+<div class="gate" id="view-setup" hidden>
+  <div class="card">
+    <h1>Set your password</h1>
+    <p class="blurb">You'll use it with your email to log in.</p>
+    <form class="fields" id="setup-form" novalidate>
+      <label class="field"><span class="cap-row"><span class="cap">Password, at least 8 characters</span><span class="count" id="setup-count">0/8</span></span>
+        <input id="setup-pw" type="password" autocomplete="new-password" minlength="8" required></label>
+      <div class="form-err" id="setup-err" hidden></div>
+      <button class="btn wide" type="submit" id="setup-btn">Save and continue</button>
+    </form>
+  </div>
+</div>
+
+<!-- Logged in, but no gallery on this account -->
+<div class="gate" id="view-none" hidden>
+  <div class="card">
+    <h1>Not a partner account yet</h1>
+    <p class="blurb">Your radar account works as usual, but it isn't linked to a gallery or museum.</p>
+    <p class="blurb">To get access for yours, email <a href="mailto:exhibitionradar@gmail.com">exhibitionradar@gmail.com</a>
+      from your work address and tell us which gallery it's for, or <a href="partner-request.html">ask on our form</a>.</p>
+    <a class="btn wide" href="/">Go to the radar</a>
+  </div>
+</div>
+
+<!-- My exhibitions -->
+<main id="view-shows" hidden>
+  <div class="head">
+    <h1>My exhibitions</h1>
+    <button class="btn" id="add-btn">Add a show</button>
+  </div>
+  <p class="sub" id="galleries"></p>
+  <p class="note">Edits show on the radar straight away. We read your website every morning, and that
+    never undoes an edit of yours. If your website later says something different, the show is flagged
+    here so you can choose which version to keep.</p>
+  <div id="list"></div>
+  <div id="removed-wrap" hidden>
+    <h2>Taken off the radar</h2>
+    <p class="sub" style="margin-bottom:12px">Put one back and it returns with the next morning's update.</p>
+    <div id="removed"></div>
+  </div>
+</main>
+
+<dialog id="editor">
+  <h1 id="editor-title">Edit show</h1>
+  <form class="fields" id="editor-form" novalidate>
+    <label class="field" id="venue-field" hidden><span class="cap">Venue</span><select name="venue_id" id="venue-select"></select></label>
+    <label class="field"><span class="cap">Title</span><input type="text" name="title" required maxlength="300"></label>
+    <label class="field"><span class="cap">Artists, separated by commas</span><input type="text" name="artist_names"></label>
+    <div class="two">
+      <label class="field"><span class="cap">Opens</span><input type="date" name="start_date"></label>
+      <label class="field"><span class="cap">Closes</span><input type="date" name="end_date"></label>
+    </div>
+    <div class="two">
+      <label class="field"><span class="cap">Opening reception</span><input type="date" name="reception_date"></label>
+      <label class="field"><span class="cap">Reception details</span><input type="text" name="reception_text" maxlength="300" placeholder="6 to 8 pm"></label>
+    </div>
+    <div class="img-row">
+      <label class="field"><span class="cap">Image link</span><input type="url" name="image_url" placeholder="https://">
+        <span class="hint">Paste the address of an image on your website.</span></label>
+      <img id="img-preview" alt="Image preview" hidden><div class="img-none" id="img-none">No image</div>
+    </div>
+    <label class="field"><span class="cap">Link to the show on your website</span><input type="url" name="source_url" placeholder="https://"></label>
+    <label class="field"><span class="cap">About the show</span><textarea name="description" maxlength="20000"></textarea></label>
+    <div class="form-err" id="editor-err" hidden></div>
+    <div class="dlg-acts">
+      <button class="btn" type="submit" id="editor-save">Save</button>
+      <button class="linkish" type="button" id="editor-cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm" style="max-width:420px">
+  <h1 id="confirm-title">Take this show off?</h1>
+  <p class="meta" id="confirm-text" style="margin:0 0 6px"></p>
+  <div class="form-err" id="confirm-err" hidden></div>
+  <div class="dlg-acts">
+    <button class="btn" id="confirm-yes">Take it off</button>
+    <button class="linkish" id="confirm-no">Keep it</button>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var API = location.hostname === "localhost" ? "http://localhost:5001" : "";
+  var KEY = "erAuthToken";  // the radar's own login, so one sign-in covers both
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; };
+
+  var token = null;
+  try { token = localStorage.getItem(KEY); } catch (e) {}
+  var data = { shows: [], removed: [] }, me = null, editing = null;
+
+  var LABELS = {
+    title: "Title", artist_names: "Artists", start_date: "Opening date", end_date: "Closing date",
+    reception_date: "Reception date", reception_text: "Reception details", description: "About the show",
+    image_url: "Image", source_url: "Link"
+  };
+  var FIELDS = ["title", "artist_names", "start_date", "end_date", "reception_date", "reception_text",
+                "image_url", "source_url", "description"];
+
+  function view(name) {
+    ["login", "setup", "none", "shows"].forEach(function (v) { $("view-" + v).hidden = v !== name; });
+    $("who").hidden = !(name === "shows" || name === "none");
+  }
+
+  async function call(method, path, body) {
+    var res = await fetch(API + path, {
+      method: method,
+      headers: Object.assign({ "Content-Type": "application/json" }, token ? { Authorization: "Bearer " + token } : {}),
+      body: body ? JSON.stringify(body) : undefined
+    });
+    var json = await res.json().catch(function () { return {}; });
+    if (res.status === 401) { forget(); view("login"); throw new Error(json.error || "Please log in."); }
+    if (!res.ok) { var err = new Error(json.error || "Something went wrong. Try again."); err.body = json; err.status = res.status; throw err; }
+    return json;
+  }
+
+  function forget() { token = null; try { localStorage.removeItem(KEY); } catch (e) {} }
+
+  // ---- Formatting ----
+  function day(iso, year) {
+    if (!iso) return "";
+    var opts = { month: "short", day: "numeric" };
+    if (year) opts.year = "numeric";
+    return new Date(iso + "T00:00:00").toLocaleDateString("en-US", opts);
+  }
+  function when(s) {
+    var today = new Date().toISOString().slice(0, 10);
+    if (s.start_date && s.start_date > today) return "Opens " + day(s.start_date) + (s.end_date ? ", closes " + day(s.end_date) : "");
+    return s.end_date ? "On view until " + day(s.end_date, true) : "On view";
+  }
+  function shown(field, value) {
+    if (value == null || value === "" || (Array.isArray(value) && !value.length)) return "nothing";
+    if (Array.isArray(value)) return value.join(", ");
+    if (/_date$/.test(field)) return day(value, true);
+    if (field === "description") return value.length > 140 ? value.slice(0, 140).trim() + "…" : value;
+    if (field === "image_url" || field === "source_url") return value.replace(/^https?:\/\//, "");
+    return value;
+  }
+  function yours(s, field) { return field === "artist_names" ? s.artist_names : s[field]; }
+  // Many venue names already end in their city ("Gagosian 541 West 24th Street, New York").
+  function place(name, city) {
+    return city && !name.toLowerCase().endsWith(city.toLowerCase()) ? name + ", " + city : name;
+  }
+
+  // "A, B and C"
+  function andList(xs) { return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1]; }
+  // When the morning read last saw the show, in words: "this morning",
+  // "yesterday", or a date. Said only for shows read from the website.
+  function lastRead(iso) {
+    if (!iso) return "";
+    var d = new Date(iso), now = new Date();
+    var days = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 864e5);
+    if (days <= 0) return d.getHours() < 12 ? "Last read from your website this morning" : "Last read from your website today";
+    if (days === 1) return "Last read from your website yesterday";
+    return "Last read from your website on " + day(iso.slice(0, 10));
+  }
+
+  // ---- Drawing ----
+  function render() {
+    var cities = [];
+    me.venues.forEach(function (v) { if (v.city && cities.indexOf(v.city) < 0) cities.push(v.city); });
+    $("galleries").textContent = me.galleries.map(function (g) { return g.name; }).join(", ") +
+      (cities.length ? " · " + andList(cities) : "");
+    // A gallery listed through partnership (key "applied:") with nothing on
+    // yet is new: it's welcomed. Anyone else with nothing on is told so.
+    var fresh = me.galleries.length && me.galleries.every(function (g) { return g.key.indexOf("applied:") === 0; }) && !data.removed.length;
+    var names = me.galleries.map(function (g) { return g.name; }).join(", ");
+    $("list").innerHTML = data.shows.length ? data.shows.map(row).join("") :
+      '<div class="welcome"><h2>' + (fresh ? "Welcome to the radar" : "Nothing on right now") + '</h2>' +
+      '<p>' + (fresh ? esc(names) + " is now listed. Add a current or upcoming show and it appears on the radar straight away."
+                     : "No current or upcoming shows. Add one and it appears on the radar straight away.") + '</p>' +
+      '<button class="btn" data-add="1">' + (fresh ? "Add your first show" : "Add a show") + '</button>' +
+      (fresh ? '<span class="hint">You\'ll need the dates, a link to the show on your website and, if you have one, an image link.</span>' : "") +
+      '</div>';
+    $("removed-wrap").hidden = !data.removed.length;
+    $("removed").innerHTML = data.removed.map(function (r) {
+      return '<div class="removed"><span>' + esc(r.title) + (r.venue ? ' <span class="meta">' + esc(r.venue) + '</span>' : "") +
+        '</span><button class="linkish" data-restore="' + esc(r.show_key) + '">Put back</button></div>';
+    }).join("");
+  }
+
+  function row(s) {
+    var img = s.display_image
+      ? '<img class="thumb" src="' + esc(s.display_image) + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+      : '<div class="thumb none">No image</div>';
+    var tags = [];
+    if (s.added_here) tags.push("Added by you");
+    else if (s.edited.length) tags.push("Edited by you");
+    var conflicts = Object.keys(s.conflicts);
+    var pic = function (url, label) {
+      return '<figure>' + (url ? '<img src="' + esc(url) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=\'<div class=&quot;none&quot;></div>\'">' : '<div class="none"></div>') +
+        '<figcaption>' + esc(label) + '</figcaption></figure>';
+    };
+    var flag = conflicts.length ? '<div class="flag"><strong>This information conflicts with your website</strong>' +
+      conflicts.map(function (f) {
+        var said = f === "image_url"
+          ? 'Image: your website now shows a different one.<div class="pics">' + pic(s.image_url, "Yours") + pic(s.conflicts[f], "Your website's") + '</div>'
+          : esc(LABELS[f] || f) + ': you have <b>' + esc(shown(f, yours(s, f))) + '</b>, your website now says <b>' + esc(shown(f, s.conflicts[f])) + '</b>.';
+        return '<div class="item"><div class="vals">' + said + '</div>' +
+          '<div class="choices"><button class="linkish" data-resolve="' + s.id + '" data-field="' + f + '" data-use="website">Use the website\'s</button>' +
+          '<button class="linkish" data-resolve="' + s.id + '" data-field="' + f + '" data-use="mine">Keep mine</button></div></div>';
+      }).join("") + "</div>" : "";
+    return '<div class="show">' + img +
+      '<div><p class="title">' + esc(s.title) + '</p>' +
+      '<div class="meta">' + (s.artist_names.length ? esc(s.artist_names.join(", ")) + "<br>" : "") +
+      esc(place(s.venue, s.city)) + " · " + esc(when(s)) + '</div>' +
+      (tags.length ? '<div class="tags">' + tags.map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("") + "</div>" : "") +
+      (s.added_here ? "" : (lastRead(s.last_read) ? '<div class="read">' + esc(lastRead(s.last_read)) + "</div>" : "")) +
+      '</div><div class="acts"><button class="linkish" data-edit="' + s.id + '">Edit</button>' +
+      '<button class="linkish danger" data-remove="' + s.id + '">Remove</button></div>' + flag + "</div>";
+  }
+
+  async function load() {
+    try {
+      me = await call("GET", "/api/partner/me");
+    } catch (err) {
+      if (err.body && err.body.not_partner) { view("none"); return; }
+      if (!token) return;
+      view("login"); showErr("login-err", err.message); return;
+    }
+    $("who-email").textContent = me.email;
+    data = await call("GET", "/api/partner/shows");
+    view("shows");
+    render();
+  }
+
+  function showErr(id, msg) { $(id).hidden = !msg; $(id).textContent = msg || ""; }
+
+  // ---- Editing ----
+  function openEditor(show) {
+    editing = show;
+    var f = $("editor-form");
+    $("editor-title").textContent = show ? "Edit show" : "Add a show";
+    $("venue-field").hidden = !!show || me.venues.length < 2;
+    $("venue-select").innerHTML = me.venues.map(function (v) {
+      return '<option value="' + v.id + '">' + esc(place(v.name, v.city)) + "</option>";
+    }).join("");
+    FIELDS.forEach(function (name) {
+      var v = show ? show[name] : "";
+      f.elements[name].value = Array.isArray(v) ? v.join(", ") : (v || "");
+    });
+    preview();
+    showErr("editor-err", "");
+    $("editor").showModal();
+  }
+
+  function preview() {
+    var url = $("editor-form").elements.image_url.value.trim();
+    var img = $("img-preview");
+    img.hidden = !/^https?:\/\//.test(url);
+    $("img-none").hidden = !img.hidden;
+    if (!img.hidden) img.src = url;
+  }
+  $("editor-form").elements.image_url.addEventListener("input", preview);
+  $("img-preview").addEventListener("error", function () { this.hidden = true; $("img-none").hidden = false; });
+
+  $("editor-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var f = this, body = {};
+    FIELDS.forEach(function (name) {
+      var v = f.elements[name].value.trim();
+      body[name] = name === "artist_names" ? v.split(",").map(function (a) { return a.trim(); }).filter(Boolean) : v;
+    });
+    if (!body.title) { showErr("editor-err", "A title is required."); return; }
+    if (!body.start_date) { showErr("editor-err", "Please give the date the show opens."); return; }
+    if (!body.end_date) { showErr("editor-err", "Please give the date the show closes."); return; }
+    if (body.end_date < body.start_date) { showErr("editor-err", "The closing date needs to come after the opening date."); return; }
+    if (editing && !body.source_url) { showErr("editor-err", "A link to the show's page on your website is required."); return; }
+    $("editor-save").disabled = true;
+    try {
+      if (editing) {
+        await call("PATCH", "/api/partner/shows/" + editing.id, body);
+      } else {
+        body.venue_id = Number($("venue-select").value || (me.venues[0] && me.venues[0].id));
+        await call("POST", "/api/partner/shows", body);
+      }
+      $("editor").close();
+      data = await call("GET", "/api/partner/shows");
+      render();
+    } catch (err) { showErr("editor-err", err.message); }
+    finally { $("editor-save").disabled = false; }
+  });
+  $("editor-cancel").addEventListener("click", function () { $("editor").close(); });
+  $("add-btn").addEventListener("click", function () { openEditor(null); });
+
+  // ---- Remove ----
+  var removing = null;
+  $("confirm-yes").addEventListener("click", async function () {
+    this.disabled = true;
+    try {
+      await call("DELETE", "/api/partner/shows/" + removing.id);
+      $("confirm").close();
+      data = await call("GET", "/api/partner/shows");
+      render();
+    } catch (err) { showErr("confirm-err", err.message); }
+    finally { this.disabled = false; }
+  });
+  $("confirm-no").addEventListener("click", function () { $("confirm").close(); });
+
+  // One listener for every button in the list.
+  $("view-shows").addEventListener("click", async function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    var find = function (id) { return data.shows.find(function (s) { return s.id === Number(id); }); };
+    if (b.dataset.edit) openEditor(find(b.dataset.edit));
+    if (b.dataset.add) openEditor(null);
+    if (b.dataset.remove) {
+      removing = find(b.dataset.remove);
+      $("confirm-title").textContent = removing.added_here ? "Delete this show?" : "Take this show off?";
+      $("confirm-yes").textContent = removing.added_here ? "Delete it" : "Take it off";
+      $("confirm-text").textContent = removing.added_here
+        ? "“" + removing.title + "” will be deleted from the radar."
+        : "“" + removing.title + "” will come off the radar and stay off, even though it's on your website. You can put it back later.";
+      showErr("confirm-err", "");
+      $("confirm").showModal();
+    }
+    if (b.dataset.resolve) {
+      b.disabled = true;
+      try {
+        await call("POST", "/api/partner/shows/" + b.dataset.resolve + "/resolve", { field: b.dataset.field, use: b.dataset.use });
+        data = await call("GET", "/api/partner/shows");
+        render();
+      } catch (err) { alert(err.message); b.disabled = false; }
+    }
+    if (b.dataset.restore) {
+      b.disabled = true;
+      try {
+        await call("POST", "/api/partner/removed/restore", { show_key: b.dataset.restore });
+        // It returns with the next morning's read, so it says so in place.
+        var note = document.createElement("span");
+        note.className = "back-soon"; note.textContent = "Back tomorrow morning";
+        b.replaceWith(note);
+      } catch (err) { alert(err.message); b.disabled = false; }
+    }
+  });
+
+  // ---- Log in, set password, log out ----
+  $("login-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    showErr("login-err", "");
+    $("login-btn").disabled = true;
+    try {
+      var res = await fetch(API + "/api/auth/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: $("login-email").value.trim(), password: $("login-pw").value })
+      });
+      var body = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showErr("login-err", res.status === 401 ? "That email and password don't match. Try again."
+          : res.status === 403 && body.closed ? "Partner pages are closed for now, with the rest of the site. Write to exhibitionradar@gmail.com if a listing needs changing."
+          : res.status === 403 ? "This email isn't set up for partner access."
+          : res.status === 429 ? "Too many attempts. Wait a few minutes and try again."
+          : (body.error || "Couldn't log in. Try again."));
+        return;
+      }
+      token = body.token;
+      try { localStorage.setItem(KEY, token); } catch (err) {}
+      await load();
+    } catch (err) { showErr("login-err", "Couldn't reach the server. Try again."); }
+    finally { $("login-btn").disabled = false; }
+  });
+
+  var setupToken = new URLSearchParams(location.search).get("setup");
+  $("setup-pw").addEventListener("input", function () {
+    var n = this.value.length;
+    $("setup-count").textContent = n >= 8 ? "ok" : n + "/8";
+    $("setup-count").classList.toggle("ok", n >= 8);
+  });
+  $("setup-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var pw = $("setup-pw").value;
+    if (pw.length < 8) { showErr("setup-err", "At least 8 characters, please."); return; }
+    $("setup-btn").disabled = true;
+    try {
+      var body = await call("POST", "/api/partner/setup", { token: setupToken, password: pw });
+      token = body.token;
+      try { localStorage.setItem(KEY, token); } catch (err) {}
+      history.replaceState(null, "", location.pathname);  // the link is spent
+      await load();
+    } catch (err) {
+      if (err.status === 400 && /expired|used/i.test(err.message)) {
+        $("setup-err").hidden = false;
+        $("setup-err").innerHTML = 'This link has expired or was already used. <a href="mailto:exhibitionradar@gmail.com">Write to us</a> for a new one.';
+      } else showErr("setup-err", err.message);
+    }
+    finally { $("setup-btn").disabled = false; }
+  });
+
+  $("logout").addEventListener("click", async function () {
+    try { await call("POST", "/api/auth/logout"); } catch (e) {}
+    forget();
+    view("login");
+  });
+
+  if (setupToken) view("setup");
+  else if (token) load().catch(function () { view("login"); });
+  else view("login");
+})();
+</script>
+</body>
+</html>

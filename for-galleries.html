@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For galleries · Exhibition Radar</title>
+<meta name="description" content="Partnership is free. It gives a gallery's own staff a direct way to correct and complete its listings on Exhibition Radar.">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<!-- From the Claude Design partner handoff (Oct 2026), "Become a Partner v3",
+     adapted to the partner flow as it is: people email us or fill in a
+     short form, and we reply and give access ourselves (docs/PARTNERS.md).
+     The handoff's reference codes and confirm step don't exist, and its
+     "After that" promises (reviewed link changes, paused bulk removals,
+     expiring logins) aren't built, so they're left out. -->
+<script>
+  (function () {
+    try {
+      var saved = (window.matchMedia("(max-width: 760px)").matches && !/ExhibitionRadarApp/.test(navigator.userAgent) && sessionStorage.getItem("er_app_preview") !== "1")
+          ? sessionStorage.getItem("er_theme") : localStorage.getItem("er_theme"); // the phone website: this visit's palette only (see index.html)
+      if (saved === "dark" || saved === "night") document.documentElement.dataset.theme = "dark";
+    } catch (e) { /* private mode: the page just starts light */ }
+  })();
+</script>
+<style>
+  :root {
+    --ground: #ffffff; --panel: #ffffff; --ink: #111111; --ink-sub: #555555; --ink-meta: #767676;
+    --rule: #d8d8d8; --link: #0000ff; --link-hover: #551a8b; --btn-fg: #ffffff;
+    --hand: 'Exhibition Radar Hand', Georgia, serif; --sans: Arial, Helvetica, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ground: #151515; --panel: #1b1b1b; --ink: #ece9e2; --ink-sub: #d9d5cc; --ink-meta: #aeaaa1;
+    --rule: rgba(255,255,255,0.14); --link: #a8c7ff; --link-hover: #cadcff; --btn-fg: #151515;
+  }
+  @font-face { font-family: 'Exhibition Radar Hand'; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype"); }
+  html, body { margin: 0; background: var(--ground); }
+  body { color: var(--ink); font-family: var(--sans); }
+  a { color: var(--link); }
+  a:hover { color: var(--link-hover); }
+  .page { max-width: 1080px; margin: 0 auto; padding: 30px clamp(18px,4vw,28px) 56px; box-sizing: border-box; }
+  .gap { margin-bottom: clamp(80px,12vw,120px); }
+
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+  .lockup { display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; }
+  .lockup img { display: block; width: 33px; height: 62px; align-self: flex-start; margin: -4.7px -2px -2.2px 0; object-fit: contain; }
+  :root[data-theme="dark"] .lockup img { filter: invert(1); }
+  .lockup span { font-family: var(--hand); font-size: 24px; line-height: 1.15; max-width: 7em; }
+  .back { padding-top: 6px; font-size: 12px; color: var(--ink); text-decoration: none; }
+  .back:hover { color: var(--ink); text-decoration: underline; }
+
+  .hero { padding: clamp(56px,10vw,96px) 0 56px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  h1 { font-family: var(--hand); font-weight: 400; font-size: clamp(34px,7vw,60px); line-height: 1.1; margin: 0 0 24px; text-wrap: balance; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--ink-sub); margin: 0 0 32px; max-width: 54ch; text-wrap: pretty; }
+  .pill { display: inline-flex; align-items: center; min-height: 44px; padding: 0 24px; border-radius: 999px; background: var(--ink); color: var(--btn-fg); font-size: 15px; text-decoration: none; }
+  .pill:hover { opacity: 0.82; color: var(--btn-fg); }
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .map { position: relative; height: clamp(360px,50vw,440px); border: 1px solid var(--rule); overflow: hidden; background: #ffffff; }
+  .map img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  figcaption { font-size: 11.5px; line-height: 1.6; color: var(--ink-meta); text-align: center; }
+
+  h2 { font-family: var(--hand); font-weight: 400; font-size: clamp(28px,5vw,40px); line-height: 1.15; text-align: center; margin: 0 0 44px; }
+  .deal { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,280px), 1fr)); gap: 32px 40px; }
+  .deal > div { border-top: 1px solid var(--ink); padding-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .deal .t { font-size: 18px; line-height: 1.3; }
+  .body { font-size: 13.5px; line-height: 1.65; color: var(--ink-sub); text-wrap: pretty; }
+
+  .rows { border-top: 1px solid var(--rule); }
+  .rows > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,260px), 1fr)); gap: 8px 40px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+  .rows .t { font-size: 17px; line-height: 1.35; }
+
+  .intro { margin: -28px auto 40px; max-width: 56ch; text-align: center; font-size: 14px; line-height: 1.65; color: var(--ink-sub); text-wrap: pretty; }
+  ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  ol li { display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 4px 14px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+  .dot { display: block; width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; }
+  ol li > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,240px), 1fr)); gap: 8px 40px; }
+  ol .t { font-size: 17px; line-height: 1.35; }
+  ol .n { color: var(--ink-meta); margin-right: 8px; }
+
+  .ask { padding: clamp(48px,8vw,72px) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .ask h2 { font-size: 26px; line-height: 1.2; margin: 0 0 22px; }
+  .ask .pill { margin-bottom: 28px; }
+  .ask p { margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: var(--ink-sub); }
+  .big-mail { font-family: var(--hand); font-size: clamp(26px,6vw,48px); line-height: 1.1; overflow-wrap: anywhere; }
+  .ask .small { margin: 22px 0 0; font-size: 13px; color: var(--ink-meta); }
+
+  footer { padding: 24px 0 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; font-size: 11.5px; color: var(--ink-meta); }
+  footer .name { font-family: var(--hand); font-size: 15px; color: var(--ink); }
+  footer div { display: flex; flex-direction: column; gap: 6px; }
+  footer span { color: var(--ink); }
+  footer a { color: var(--ink-meta); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <a class="lockup" href="/"><img src="logo-stand.png" alt="" width="33" height="62"><span>Exhibition Radar</span></a>
+    <a class="back" href="/">&larr; back to the radar</a>
+  </header>
+
+  <section class="hero">
+    <h1>Are you a gallery or institution? Become a partner!</h1>
+    <p class="lede">Partnership is free. It gives your own staff a direct way to correct and complete your listings on the radar, so visitors find the right dates, images and artists.</p>
+    <a class="pill" href="partner-request.html">create partner account</a>
+  </section>
+
+  <figure class="gap">
+    <div class="map"><img src="for-galleries-map.jpg" alt="The radar's map of Los Angeles, with a pin for each gallery and museum showing now" width="2160" height="880" loading="lazy"></div>
+    <figcaption>Every listing is read from the venue's own website and links back to it. Map &copy; OpenStreetMap contributors.</figcaption>
+  </figure>
+
+  <section class="gap">
+    <h2>The deal</h2>
+    <div class="deal">
+      <div><div class="t">No one pays to be listed.</div>
+        <div class="body">Every venue whose website we can read is on the radar, for free. Visitors use it for free too. There are no plans or upgrades for anyone.</div></div>
+      <div><div class="t">Partnership doesn't buy placement.</div>
+        <div class="body">Partners don't get a better position, bigger cards or featured spots. Their shows go through the same checks as everyone else's.</div></div>
+      <div><div class="t">The information still comes from you.</div>
+        <div class="body">We read your website every morning. Partnership lets the people who know your shows best give us the details directly.</div></div>
+    </div>
+  </section>
+
+  <section class="gap">
+    <h2>What partners can do</h2>
+    <div class="rows">
+      <div><div class="t">Correct any show</div>
+        <div class="body">Title and artists, opening and closing dates, the opening reception, the image, the link to your page and the text about the show. Edits show on the radar straight away.</div></div>
+      <div><div class="t">Add a show we missed</div>
+        <div class="body">At any of your spaces, including shows that never made it onto your own listing page.</div></div>
+      <div><div class="t">Take a show off</div>
+        <div class="body">It stays off, even while it's still on your website, and you can put it back later.</div></div>
+      <div><div class="t">Choose when your website disagrees</div>
+        <div class="body">Our morning read never overwrites your edits. If your website later says something different, the show is flagged and you choose which version to keep.</div></div>
+      <div><div class="t">Work across spaces and staff</div>
+        <div class="body">One login can look after several galleries, and a gallery can have several people with access.</div></div>
+    </div>
+  </section>
+
+  <section id="how" class="gap">
+    <h2>How to get access</h2>
+    <p class="intro">A person at Exhibition Radar reads every request and replies. No documents, no ID, no phone calls.</p>
+    <ol>
+      <li><span class="dot" style="background:#cc2200"></span>
+        <div><div class="t"><span class="n">1</span>Get in touch</div>
+          <div class="body">Fill in a short <a href="partner-request.html">form</a> with your name, your gallery and your company email, or write to us at <a href="mailto:exhibitionradar@gmail.com?subject=Partner%20access">exhibitionradar@gmail.com</a> from it.</div></div></li>
+      <li><span class="dot" style="background:#00852a"></span>
+        <div><div class="t"><span class="n">2</span>We reply ourselves</div>
+          <div class="body">Usually within a few days. To keep listings safe, we give access once we know you're with the gallery: from your company email, or, without one, through a DM from your gallery's Instagram account or a phone call.</div></div></li>
+      <li><span class="dot" style="background:#0000ff"></span>
+        <div><div class="t"><span class="n">3</span>We give you access</div>
+          <div class="body">To your gallery on the radar, or, if it isn't on the radar yet, we list it for you. Every space you have, in any city.</div></div></li>
+      <li><span class="dot" style="background:var(--ink)"></span>
+        <div><div class="t"><span class="n">4</span>Set your password and start</div>
+          <div class="body">Our reply has a link to set your password, then you're straight into My exhibitions.</div></div></li>
+    </ol>
+  </section>
+
+  <section class="ask gap">
+    <h2>Request access</h2>
+    <a class="pill" href="partner-request.html">create partner account</a>
+    <p>Or send a request by email:</p>
+    <a class="big-mail" href="mailto:exhibitionradar@gmail.com?subject=Partner%20access">exhibitionradar@gmail.com</a>
+    <p class="small">Already a partner? <a href="partner.html">Log in to the partner portal</a></p>
+  </section>
+
+  <footer>
+    <div class="name">Exhibition Radar</div>
+    <div><span>Radar</span><a href="/">the map</a></div>
+    <div><span>Galleries</span><a href="partner-request.html">create partner account</a><a href="#how">how to get access</a><a href="partner.html">partner portal</a></div>
+    <div><span>About</span><a href="terms.html">terms</a><a href="mailto:exhibitionradar@gmail.com">email</a></div>
+  </footer>
+</div>
+</body>
+</html>

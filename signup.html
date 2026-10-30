@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up · Exhibition Radar</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<!-- A saved palette before the first paint, so arriving here from a dark
+     index isn't a white flash. Same rule as index.html. -->
+<script>
+  (function () {
+    try {
+      var saved = (window.matchMedia("(max-width: 760px)").matches && !/ExhibitionRadarApp/.test(navigator.userAgent) && sessionStorage.getItem("er_app_preview") !== "1")
+          ? sessionStorage.getItem("er_theme") : localStorage.getItem("er_theme"); // the phone website: this visit's palette only (see index.html)
+      if (saved === "dark" || saved === "night") {     // "night" was the old name
+        document.documentElement.dataset.theme = "dark";
+      }
+    } catch (e) { /* private mode: the page just starts light */ }
+  })();
+</script>
+<style>
+  /* Tokens mirror index.html (Claude Design handoff, "sign up"). Klein is
+     the app's own palette; this page carries the default and dark only. */
+  :root {
+    --ink: #111111; --ink-sub: #555555; --ink-meta: #767676; --ink-faint: #8a8a8a;
+    --link: #0000ff; --link-hover: #551a8b; --alert: #b22211;
+    --rule: #d8d8d8; --rule-strong: #a0a0a0;
+    --ground: #ffffff; --panel: #ffffff; --ground-sel: #f0eee6;
+    --sans: Arial, Helvetica, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece9e2; --ink-sub: #d9d5cc; --ink-meta: #aeaaa1; --ink-faint: #97938a;
+    --link: #a8c7ff; --link-hover: #cadcff; --alert: #e8746a;
+    --rule: rgba(255,255,255,.14); --rule-strong: rgba(255,255,255,.3);
+    --ground: #151515; --panel: #1b1b1b; --ground-sel: #0f0f0f;
+  }
+  @font-face {
+    font-family: 'Exhibition Radar Hand'; font-style: normal; font-weight: 400; font-display: swap;
+    src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype");
+  }
+  html { background: var(--ground-sel); }
+  body {
+    margin: 0; min-height: 100vh; box-sizing: border-box;
+    padding: 48px 24px; display: flex; align-items: center; justify-content: center;
+    background: var(--ground-sel); color: var(--ink); font-family: var(--sans);
+  }
+  /* The card floats in the middle of an otherwise empty page; without this
+     the only way out is the browser's back button. */
+  .back { position: fixed; top: 20px; left: 22px; font-size: 12px; color: var(--ink-meta); text-decoration: none; }
+  .back:hover { color: var(--ink); text-decoration: underline; }
+  /* On a phone the card is the page. The body is a flex row, so a back
+     link taken out of position:fixed became a second column beside the
+     card -- stranded in the margin, with the card shoved off the side of
+     the screen. Stacking the column is what actually fixes it. */
+  @media (max-width: 520px) {
+    body { flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 20px 16px 40px; }
+    .back { position: static; display: block; margin: 0 0 18px; font-size: 13.5px; }
+    .card { padding: 32px 22px 30px; box-shadow: none; }
+  }
+  a { color: var(--link); }
+  a:hover { color: var(--link-hover); }
+
+  .card {
+    width: 100%; max-width: 430px; box-sizing: border-box;
+    background: var(--panel); border: 1px solid var(--rule);
+    box-shadow: 0 18px 50px rgba(0,0,0,.10); padding: 44px 44px 40px;
+    transition: max-width .18s ease;
+  }
+  h1 {
+    margin: 0 0 26px; text-align: center; font-weight: 400; font-size: 32px; line-height: 1.15;
+    font-family: 'Exhibition Radar Hand', Georgia, serif;
+  }
+  .blurb { margin: 0 0 26px; text-align: center; font-size: 13.5px; line-height: 1.7; color: var(--ink-meta); text-wrap: pretty; }
+  .blurb:empty { display: none; }
+
+  .fields { display: flex; flex-direction: column; gap: 22px; }
+  label.field { display: flex; flex-direction: column; gap: 7px; }
+  .cap { font-family: var(--sans); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  .cap-row { display: flex; justify-content: space-between; gap: 12px; }
+  input[type="email"], input[type="password"], input[type="text"] {
+    width: 100%; box-sizing: border-box; background: none; border: none;
+    border-bottom: 1px solid var(--rule); padding: 0 0 8px; border-radius: 0;
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+  }
+  input:focus { outline: none; border-bottom-color: var(--ink); }
+  input.invalid { border-bottom-color: var(--alert); }
+  .err { font-size: 11.5px; line-height: 1.5; color: var(--alert); }
+  .err[hidden] { display: none; }
+  .form-err { border-left: 2px solid var(--alert); padding: 2px 0 2px 12px; font-size: 12.5px; line-height: 1.6; color: var(--alert); }
+  .pw-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .linkish { background: none; border: none; padding: 0; cursor: pointer; font-family: var(--sans); font-size: 12.5px; color: var(--link); }
+  .linkish:hover { text-decoration: underline; }
+  .quiet { color: var(--ink-meta); font-size: 11.5px; }
+  .actions { display: flex; flex-direction: column; gap: 13px; margin-top: 6px; }
+  .btn {
+    display: block; box-sizing: border-box; width: 100%; text-align: center;
+    font-family: var(--sans); font-size: 13px; letter-spacing: .06em;
+    color: var(--ground); background: var(--ink); border: none;
+    padding: 14px 26px; cursor: pointer; text-decoration: none;
+  }
+  .btn:hover { opacity: .82; }
+  .btn[disabled] { opacity: .5; cursor: default; }
+  .centered { text-align: center; font-size: 12.5px; color: var(--ink-meta); }
+  .honeypot { position: absolute; left: -9999px; }
+
+  .panel { border: 1px solid var(--rule); padding: 22px 24px; }
+  .panel p { margin: 0 0 18px; font-size: 13px; line-height: 1.7; color: var(--ink-sub); text-wrap: pretty; }
+  .panel .row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<a class="back" href="/">&larr; back to the radar</a>
+
+<div class="card" id="card" data-view="form">
+  <h1 id="heading">Make an account</h1>
+  <p class="blurb" id="blurb"></p>
+
+  <div id="view-form" hidden>
+    <form class="fields" id="signup" novalidate>
+      <label class="field">
+        <span class="cap">Email</span>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        <span class="err" id="email-err" hidden>Enter a valid email address.</span>
+      </label>
+      <label class="field">
+        <span class="cap cap-row"><span>Password</span><span id="pw-count">0/8</span></span>
+        <input id="password" type="password" autocomplete="new-password" required minlength="8">
+        <span class="pw-row">
+          <span class="err" id="pw-err" hidden>At least 8 characters.</span>
+          <span style="flex:1"></span>
+          <button type="button" class="linkish quiet" id="pw-toggle">show</button>
+        </span>
+      </label>
+      <input class="honeypot" type="text" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="form-err" id="form-err" hidden></div>
+      <div class="actions">
+        <button class="btn" type="submit" id="submit">Create account</button>
+        <span class="centered">Already have one? <a href="/">Log in</a></span>
+        <span class="centered">A gallery or museum? <a href="for-galleries.html">Become a partner</a></span>
+      </div>
+    </form>
+  </div>
+
+  <div id="view-closed" hidden>
+    <div class="actions" style="margin-top:22px">
+      <span class="centered">Already have an account? <a href="/">Log in</a></span>
+    </div>
+  </div>
+
+  <div id="view-done" hidden>
+    <div class="panel">
+      <div class="cap" style="margin-bottom:10px">Account created</div>
+      <p>You're signed in. The radar is yours to browse. Pick a home city in your account whenever you like.</p>
+      <div class="row" style="align-items:center;gap:18px">
+        <a class="btn" style="width:auto;padding:10px 18px;font-size:12px" href="/">Go to the radar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var API = location.hostname === "localhost" ? "http://localhost:5001" : "";
+  var $ = function (id) { return document.getElementById(id); };
+  var card = $("card");
+
+  var HEADINGS = {
+    loading: "Make an account", form: "Make an account", taken: "Make an account",
+    limited: "Make an account", closed: "Signups are closed for now",
+    done: "Welcome to the radar"
+  };
+  // Everything is free (since 23 Sep 2026), so the page says what an
+  // account is for rather than what it costs.
+  var BLURBS = {
+    form: "It's free. An account follows the galleries you care about, plans a gallery night and keeps the shows you've seen.",
+    taken: "It's free. An account follows the galleries you care about, plans a gallery night and keeps the shows you've seen.",
+    closed: "Exhibition Radar is in private preview.",
+    done: "One account, every city the radar covers."
+  };
+
+  var state = "loading";
+
+  function render() {
+    $("view-form").hidden = state !== "form" && state !== "taken" && state !== "limited";
+    $("view-closed").hidden = state !== "closed";
+    $("view-done").hidden = state !== "done";
+    $("heading").textContent = HEADINGS[state];
+    $("blurb").textContent = BLURBS[state] || "";
+
+    var msg = state === "limited" ? "Too many attempts. Try again in a few minutes." : "";
+    $("form-err").hidden = !msg;
+    $("form-err").textContent = msg;
+
+    var taken = state === "taken";
+    $("email-err").hidden = !taken;
+    $("email").classList.toggle("invalid", taken);
+    if (taken) $("email-err").innerHTML = 'An account with that email already exists. <a href="/">Log in instead?</a>';
+  }
+
+  function setState(next) { state = next; render(); }
+
+  var pw = $("password");
+  pw.addEventListener("input", function () {
+    $("pw-count").textContent = pw.value.length >= 8 ? "ok" : pw.value.length + "/8";
+  });
+  $("pw-toggle").addEventListener("click", function () {
+    var hidden = pw.type === "password";
+    pw.type = hidden ? "text" : "password";
+    this.textContent = hidden ? "hide" : "show";
+  });
+
+  // The same checks the server makes, so they're seen before the round trip.
+  $("signup").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var email = $("email").value.trim().toLowerCase();
+    var emailBad = !email || email.indexOf("@") < 0;
+    var pwBad = pw.value.length < 8;
+    $("email-err").hidden = !emailBad;
+    if (emailBad) $("email-err").textContent = "Enter a valid email address.";
+    $("email").classList.toggle("invalid", emailBad);
+    $("pw-err").hidden = !pwBad;
+    pw.classList.toggle("invalid", pwBad);
+    if (emailBad || pwBad) return;
+
+    $("submit").disabled = true;
+    try {
+      var res = await fetch(API + "/api/auth/signup", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: pw.value, website: $("website").value }),
+      });
+      var body = await res.json().catch(function () { return {}; });
+      if (res.status === 201) {
+        // The radar reads this key on load, so the new account is already
+        // signed in by the time they get there.
+        try { localStorage.setItem("erAuthToken", body.token); } catch (err) {}
+        setState("done");
+      } else if (res.status === 409) { setState("taken"); }
+      else if (res.status === 429) { setState("limited"); }
+      else if (res.status === 403) { setState("closed"); }
+      else {
+        setState("form");
+        $("form-err").hidden = false;
+        $("form-err").textContent = body.error || "Something went wrong. Try again.";
+      }
+    } catch (err) {
+      setState("form");
+      $("form-err").hidden = false;
+      $("form-err").textContent = "Couldn't reach the server. Try again.";
+    } finally { $("submit").disabled = false; }
+  });
+
+  // Ask before drawing: offering a form, taking a password and only then
+  // saying nobody can sign up is a rude way to find out.
+  fetch(API + "/api/config")
+    .then(function (r) { return r.json(); })
+    .then(function (c) { setState(c.signups_open ? "form" : "closed"); })
+    .catch(function () { setState("form"); });  // can't tell: let the server answer
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Friend me on Exhibition Radar!</title>
+  <!-- A friend invite, as sent: /invite.html?invite=<token>. People go
+       straight on to the radar, which takes the invite from /?invite=<token>
+       (handleInviteArrival in index.html), with any other parameters kept,
+       in the same tab. Link previews and crawlers don't run scripts, so they
+       read this page's own card: the invite's words and og-invite.png
+       (drawn by scripts/make_invite_card.py). No og:url or canonical link:
+       some apps open that address instead of the one shared, which would
+       drop the invite. Kept out of search engines, since the address
+       carries someone's invite. -->
+  <script>location.replace("/" + location.search + location.hash);</script>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Find art shows near you.">
+  <meta property="og:title" content="Friend me on Exhibition Radar!">
+  <meta property="og:description" content="Find art shows near you.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Exhibition Radar">
+  <meta property="og:image" content="https://exhibitionradar.com/og-invite.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Two radar dishes facing each other, with the words Friend me on Exhibition Radar!">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Friend me on Exhibition Radar!">
+  <meta name="twitter:description" content="Find art shows near you.">
+  <meta name="twitter:image" content="https://exhibitionradar.com/og-invite.png">
+  <link rel="icon" type="image/png" href="favicon.png?v=2">
+  <style>body{max-width:760px;margin:8vh auto;padding:0 22px;color:#17150f;background:#faf9f5;font:16px/1.55 Georgia,serif}a{color:inherit}h1{font-size:2rem;font-weight:400}</style>
+</head>
+<body>
+  <p><a href="/">Exhibition Radar</a></p>
+  <h1>Friend me on Exhibition Radar!</h1>
+</body>
+</html>

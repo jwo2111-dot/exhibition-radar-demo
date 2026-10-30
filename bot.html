@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ExhibitionRadarBot · Exhibition Radar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="What ExhibitionRadarBot fetches, how often, and how to ask it to stop.">
+  <link rel="icon" type="image/png" href="favicon.png?v=2">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+  <!-- A saved palette before the first paint, so arriving here from a
+       dark index isn't a white flash. Same as terms.html. -->
+  <script>
+    (function () {
+      try {
+        var saved = (window.matchMedia("(max-width: 760px)").matches && !/ExhibitionRadarApp/.test(navigator.userAgent) && sessionStorage.getItem("er_app_preview") !== "1")
+          ? sessionStorage.getItem("er_theme") : localStorage.getItem("er_theme"); // the phone website: this visit's palette only (see index.html)
+        if (saved === "dark" || saved === "night") {     // "night" was the old name
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (e) { /* private mode: the page just starts light */ }
+    })();
+  </script>
+  <style>
+    /* The site's own hand, same as the masthead and the modal headings.
+       A caps-only face, so it wants a little more room than the serif. */
+    @font-face {
+      font-family: 'Exhibition Radar Hand'; font-style: normal; font-weight: 400; font-display: swap;
+      src: url("fonts/ExhibitionRadarHand-Regular.ttf") format("truetype");
+    }
+    html { touch-action: manipulation; }
+    :root { --ink: #111111; --ink-body: #555555; --ink-meta: #767676; --rule: #d8d8d8; --link: #0000ff; --link-visited: #551a8b; --ground: #ffffff; --code: #f4f2ed; }
+    :root[data-theme="dark"] {
+      --ink: #ece9e2; --ink-body: #cdc9c0; --ink-meta: #aeaaa1;
+      --rule: rgba(255, 255, 255, 0.14); --link: #a8c7ff; --link-visited: #cadcff; --ground: #151515; --code: #1f1f1f;
+    }
+    body { font-family: Arial, Helvetica, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 24px 60px; color: var(--ink); background: var(--ground); }
+    a { color: var(--link); }
+    a:hover { color: var(--link-visited); }
+    :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    a.back { font-size: 12px; color: var(--ink); text-decoration: none; }
+    a.back:hover { text-decoration: underline; color: var(--ink); }
+    h1 { font-family: 'Exhibition Radar Hand', 'Times New Roman', Times, serif; letter-spacing: 0.01em; font-weight: 400; font-size: clamp(19px, 6.6vw, 26px); line-height: 1.2; letter-spacing: -0.005em; margin: 22px 0 14px; }
+    h2 { font-family: 'Times New Roman', Times, serif; font-weight: 400; font-size: 18px; line-height: 1.3; margin: 28px 0 10px; }
+    p, li { font-size: 13.5px; line-height: 1.7; color: var(--ink-body); margin: 0 0 14px; }
+    ul { margin: 0 0 14px; padding-left: 20px; }
+    li { margin: 0 0 7px; }
+    pre { background: var(--code); border: 1px solid var(--rule); padding: 12px 14px; overflow-x: auto;
+          font: 12px/1.6 'Courier New', Courier, monospace; color: var(--ink); margin: 0 0 14px; }
+    strong { color: var(--ink); }
+    footer { margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 11.5px; color: var(--ink-meta); }
+  </style>
+</head>
+<body>
+  <a class="back" id="back-link" href="/">&larr; back to the radar</a>
+  <h1>ExhibitionRadarBot</h1>
+
+  <p>If you&rsquo;ve seen <strong>ExhibitionRadarBot</strong> in your logs, that&rsquo;s us.
+     <a href="https://exhibitionradar.com">Exhibition Radar</a> is a free index of art exhibitions.
+     We read exhibition pages once a day so that someone looking for a show can find yours, and
+     every listing links back to you.</p>
+
+  <h2>To stop it</h2>
+  <p>Add this to your <code>robots.txt</code> and we&rsquo;ll skip you from the next day on:</p>
+  <pre>User-agent: ExhibitionRadarBot
+Disallow: /</pre>
+  <p>We check it before every visit, so that&rsquo;s all it takes. You don&rsquo;t need to
+     tell us, and we won&rsquo;t try to talk you out of it. If something&rsquo;s listed wrongly,
+     <a href="https://exhibitionradar.com/?feedback">tell us here</a>, or email
+     <a href="mailto:exhibitionradar@gmail.com">exhibitionradar@gmail.com</a>. Feedback is read daily.</p>
+
+  <h2>What we show</h2>
+  <ul>
+    <li>The facts of a show: artist, title, dates, your gallery and address, and a link to your page.</li>
+    <li>The opening of your press release, credited to you, with a link to read the rest on your
+      site. Never the whole thing.</li>
+    <li>One image, loaded from <strong>your</strong> server. We keep no copy, so if you change or
+      remove it, it changes or disappears here too.</li>
+  </ul>
+
+  <h2>How it behaves</h2>
+  <ul>
+    <li>Reads your <code>robots.txt</code> first, <code>Crawl-delay</code> included.</li>
+    <li>At least 1.5 seconds between requests, once a day, then cached for 20 hours.</li>
+    <li>Public exhibition pages only, never anything behind a login or a form.</li>
+  </ul>
+
+  <p>The point of all this is to send people to your door.</p>
+
+  <footer>
+    <a href="/">Exhibition Radar</a> &middot; <a href="/terms.html">Terms</a>
+  </footer>
+</body>
+</html>

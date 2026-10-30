@@ -1,0 +1,409 @@
+/* ---- The app (html.is-app; the App design, Oct 2026) ----------------------
+   The app's own look, loaded by index.html's head script in app mode only
+   (since 26 Oct 2026). index.html's own "The app" block still carries the
+   earlier pieces (the tab bar, the city drop-down, the profile and the way
+   in); this file adds the 26 Oct handoff's map tab and Settings, and
+   reshapes what it changed. Everything here sits inside the phone
+   breakpoint, as that block does. The design system note in index.html
+   holds: no cards, no shadows beyond the chrome's, no rounded corners
+   beyond the pills and rounds the design draws.
+   This sheet is linked from the head script, before index.html's own
+   <style>, so on a tie that one wins: every selector here carries :root
+   for one pseudo-class more, which is what lets it reshape the chrome. */
+
+@media (max-width: 760px) {
+  /* ---- Tokens ----------------------------------------------------------
+     The chrome (the tab bar, the pin buttons, the city and columns rounds)
+     is white on the light palette and near-black on the dark, with the
+     design's shadow under it. On the light palette the chrome gets a thin
+     black edge (1px at 38%, --chrome-edge; transparent on dark), and over
+     the map a deeper shadow that falls below it (the App design, 9 Oct
+     2026). The pins' colours are tokens so colourblind mode (html[data-cvd],
+     the Okabe-Ito palette) changes them in one place; the map's own pins
+     follow through app.js (PIN_INK). --pin-soon-off is the upcoming pin's
+     centre on an unselected button: the map's water blue on dark. */
+  html.is-app:root {
+    --bt: 1; /* big text: 1.22 */
+    --nav: #ffffff; --nav-ind: #111111; --nav-fg: #111111; --nav-fg-on: #ffffff;
+    --chrome-edge: rgba(0, 0, 0, 0.38);
+    --chrome-shadow: 0 1px 2px rgba(17, 17, 17, 0.12), 0 3px 10px rgba(17, 17, 17, 0.12);
+    --nav-shadow: 0 1px 2px rgba(17, 17, 17, 0.14), 0 3px 10px rgba(17, 17, 17, 0.12);
+    --pin-current: #cc2200; --pin-opening: #00852a; --pin-soon: #3545d6; --pin-soon-off: #3545d6;
+    --hand: 'Exhibition Radar Hand Lower', 'Exhibition Radar Hand', 'Times New Roman', Times, serif;
+  }
+  html.is-app:root:not([data-theme="dark"]):not([data-theme="klein"]) body[data-view="map"]:not([data-app-on="profile"]):not([data-app-on="discover"]) {
+    --chrome-shadow: 0 2px 3px rgba(17, 17, 17, 0.16), 0 7px 14px rgba(17, 17, 17, 0.32);
+    --nav-shadow: 0 2px 3px rgba(17, 17, 17, 0.16), 0 9px 16px rgba(17, 17, 17, 0.32);
+  }
+  html.is-app:root[data-theme="dark"], html.is-app:root[data-theme="klein"] {
+    --nav: rgba(17, 17, 17, 0.94); --nav-ind: #ffffff; --nav-fg: #ffffff; --nav-fg-on: #111111;
+    --chrome-edge: transparent;
+    --chrome-shadow: 0 2px 5px rgba(17, 17, 17, 0.08);
+    --nav-shadow: 0 2px 6px rgba(17, 17, 17, 0.08);
+    --pin-soon-off: #b9d2ee;
+  }
+  html.is-app:root[data-cvd] { --pin-current: #d55e00; --pin-opening: #009e73; --pin-soon: #0072b2; --pin-soon-off: #0072b2; }
+  html.is-app:root[data-bigtext] { --bt: 1.22; }
+
+  /* ---- The chrome ------------------------------------------------------ */
+  html.is-app:root #app-tabs { background: var(--nav); box-shadow: 0 0 0 1px var(--chrome-edge), var(--nav-shadow); }
+  html.is-app:root #app-tab-ind { background: var(--nav-ind); }
+  html.is-app:root #app-tabs button { color: var(--nav-fg); }
+  html.is-app:root #app-tabs button[aria-current="page"] { color: var(--nav-fg-on); }
+  html.is-app:root #phone-row :is(#app-city-btn, #app-cols-btn), html.is-app:root #app-cols-slot #app-cols-btn { background: var(--nav); color: var(--nav-fg); box-shadow: 0 0 0 1px var(--chrome-edge), var(--chrome-shadow); }
+  html.is-app:root #phone-row #app-city-btn[aria-expanded="true"] { background: var(--nav-ind); color: var(--nav-fg-on); }
+
+  /* The date-set pills along the top, the filter round and its clear are
+     gone from the app: the pin buttons and the drop-down pills have them. */
+  html.is-app:root #phone-dates, html.is-app:root #phone-row #tab-btn, html.is-app:root #app-clear-btn, html.is-app:root #app-clear-string { display: none !important; }
+  html.is-app:root #phone-row { padding-top: 4px; }
+
+  /* ---- The filter row: location / type / when -------------------------
+     Three equal pills, 116 x 36, 8px apart and centred under the search,
+     so they mirror the pin buttons below; the columns round floats at the
+     row's right while the grid shows and the pills inset evenly for it.
+     Unselected: black at 60% element opacity, white words, no blur.
+     Selected: white at 92% with near-black words. Opacity eases over
+     160ms. Arial throughout (the App design, 10 and 12 Oct 2026). */
+  html.is-app:root #app-filters { display: flex; position: relative; align-items: center; padding: 0 0 10px; pointer-events: auto; }
+  html.is-app:root #app-filters[hidden] { display: none; }
+  html.is-app:root #app-filters-grid { flex: 1 1 auto; min-width: 0; box-sizing: border-box; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 116px)); justify-content: center; gap: 8px; align-items: start; transition: padding 300ms cubic-bezier(0.32, 0.72, 0, 1); }
+  html.is-app:root #app-filters.with-cols #app-filters-grid { padding: 0 42px; }
+  html.is-app:root .app-pill-wrap { position: relative; min-width: 0; }
+  html.is-app:root .app-pill { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 36px; padding: 0 12px 0 14px; box-sizing: border-box; border: none; border-radius: 999px; background: #000000; opacity: 0.6; color: #ffffff; cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: calc(14px * var(--bt)); white-space: nowrap; transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1), background-color 160ms ease, color 160ms ease, opacity 160ms ease; }
+  html.is-app:root .app-pill:active { transform: scale(0.96); }
+  html.is-app:root .app-pill.on { background: rgba(255, 255, 255, 0.92); color: #111111; opacity: 1; }
+  html.is-app:root .app-pill > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  html.is-app:root .app-pill > svg { display: block; flex: 0 0 auto; transition: transform 200ms ease; }
+  html.is-app:root .app-pill.open > svg { transform: rotate(180deg); }
+  html.is-app:root .app-menu { position: absolute; top: 40px; left: 0; z-index: 2; display: flex; flex-direction: column; min-width: 200px; max-width: calc(100vw - 32px); max-height: min(420px, calc(100dvh - var(--phone-top-h, 146px) - var(--app-tabs-h) - 16px)); overflow-y: auto; overscroll-behavior: contain; padding: 6px; box-sizing: border-box; border-radius: 18px; background: rgba(28, 28, 30, 0.55); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); animation: er-app-fade-in 160ms ease; }
+  html.is-app:root .app-menu[hidden] { display: none; }
+  html.is-app:root .app-pill-wrap:nth-child(2) .app-menu { left: 50%; transform: translateX(-50%); }
+  html.is-app:root .app-pill-wrap:nth-child(3) .app-menu { left: auto; right: 0; }
+  html.is-app:root .app-menu [role="option"] { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 12px; border: none; border-radius: 12px; background: transparent; color: #ffffff; cursor: pointer; text-align: left; font-family: Arial, Helvetica, sans-serif; font-size: calc(15px * var(--bt)); white-space: nowrap; }
+  html.is-app:root .app-menu [role="option"][aria-selected="true"] { background: rgba(255, 255, 255, 0.16); }
+  html.is-app:root .app-menu [role="option"] svg { display: block; flex: 0 0 auto; opacity: 0; }
+  html.is-app:root .app-menu [role="option"][aria-selected="true"] svg { opacity: 1; }
+  html.is-app:root .app-menu-clear { min-height: 40px; margin-top: 2px; padding: 0 12px; border: none; border-top: 1px solid rgba(255, 255, 255, 0.14); border-radius: 0 0 12px 12px; background: transparent; color: rgba(235, 235, 245, 0.72); cursor: pointer; text-align: left; font-family: Arial, Helvetica, sans-serif; font-size: calc(14px * var(--bt)); }
+  /* The columns round, at the row's right: a 34px round that grows in
+     while the grid shows (as it did in the bar). */
+  html.is-app:root #app-cols-slot { position: absolute; right: 0; top: 1px; display: flex; }
+  html.is-app:root #app-cols-slot #app-cols-btn { display: grid; place-items: center; position: relative; width: 34px; height: 34px; padding: 0; margin: 0; border: none; border-radius: 50%; cursor: pointer; opacity: 0; transform: scale(0.3) rotate(-25deg); pointer-events: none; transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease; }
+  html.is-app:root #app-cols-slot #app-cols-btn.shown { opacity: 1; transform: none; pointer-events: auto; }
+  html.is-app:root #app-cols-slot #app-cols-btn::after { content: ""; position: absolute; inset: -5px; }
+  html.is-app:root #app-cols-slot #app-cols-btn:active { transform: scale(0.94); }
+  /* A tap anywhere else closes a menu or the quick list. */
+  html.is-app:root #app-catch:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 699; }
+
+  /* ---- The pin buttons --------------------------------------------------
+     Three 44px rounds in a row above the tab bar, 8px apart and centred,
+     one over each tab. On: filled with the pin's colour, a white pin with
+     a coloured centre. Off: black at 60%, the same white pin. The nav's
+     blur and shadow under each; hidden in grid view (the App design, 10
+     and 12 Oct 2026). */
+  html.is-app:root #app-pins { display: flex; position: fixed; left: 0; right: 0; bottom: 96px; z-index: 850; justify-content: center; gap: 8px; pointer-events: none; transition: opacity 200ms ease; }
+  html.is-app:root #app-pins[hidden] { display: none; }
+  html.is-app:root #app-pins button { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: none; border-radius: 999px; background: #000000; opacity: 0.6; color: var(--pin); pointer-events: auto; cursor: pointer; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 0 0 1px var(--chrome-edge), var(--nav-shadow); transition: opacity 200ms ease, background-color 200ms ease, transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root #app-pins button:active { transform: scale(0.92); }
+  html.is-app:root #app-pins button[data-app-set="current"] { --pin: var(--pin-current); }
+  html.is-app:root #app-pins button[data-app-set="opening"] { --pin: var(--pin-opening); }
+  html.is-app:root #app-pins button[data-app-set="upcoming"] { --pin: var(--pin-soon); }
+  html.is-app:root #app-pins button[data-app-set="upcoming"][aria-pressed="false"] { color: var(--pin-soon-off); }
+  html.is-app:root #app-pins button[aria-pressed="true"] { background: var(--pin); opacity: 1; }
+  html.is-app:root #app-pins .app-pin { display: block; overflow: visible; transform-origin: 11px 29px; }
+  /* Under a venue sheet or an open show they step aside. */
+  html.is-app:root #phone-venue.open ~ #app-pins, html.is-app:root body.phone-detail-open #app-pins, html.is-app:root body.app-fx #app-pins { opacity: 0; pointer-events: none; }
+  html.is-app:root #phone-venue.open ~ #app-pins button { pointer-events: none; }
+  /* The city drop-down's pins (.key-pin, drawn by index.html) take the
+     app's colours: the upcoming blue, and the colourblind palette. */
+  html.is-app:root .key-pin { color: var(--pin-current); }
+  html.is-app:root .key-pin.opening { color: var(--pin-opening); }
+  html.is-app:root .key-pin.soon { color: var(--pin-soon); }
+
+  /* ---- The quick city list ----------------------------------------------
+     Press and hold the city round: your cities as chips, right under it,
+     in the nav's colour and shadow (the App design, 9 Oct 2026). */
+  html.is-app:root #app-quick:not([hidden]) { display: flex; flex-direction: column; gap: 5px; position: fixed; z-index: 710; max-width: calc(100vw - 32px); box-sizing: border-box; padding: 10px 8px 8px; border-radius: 18px; background: var(--nav); color: var(--nav-fg); box-shadow: 0 0 0 1px var(--chrome-edge), var(--nav-shadow); font-family: Arial, Helvetica, sans-serif; animation: er-app-drop-in 200ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root .app-quick-label { padding: 0 6px; font-size: calc(11.5px * var(--bt)); opacity: 0.6; }
+  html.is-app:root .app-quick-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 2px; }
+  html.is-app:root .app-quick-chips button { display: flex; align-items: baseline; gap: 5px; height: 30px; padding: 0 11px; border: none; border-radius: 999px; background: transparent; color: var(--nav-fg); box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.28); cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: calc(13px * var(--bt)); line-height: 30px; white-space: nowrap; text-transform: lowercase; transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root .app-quick-chips button:active { transform: scale(0.95); }
+  html.is-app:root .app-quick-chips button[aria-pressed="true"] { background: var(--nav-ind); color: var(--nav-fg-on); box-shadow: none; }
+  html.is-app:root .app-quick-chips small { font-size: calc(11px * var(--bt)); opacity: 0.6; }
+
+  /* ---- Settings ------------------------------------------------------------
+     Pushed from the profile tab: a back button, the heading in the hand,
+     then sections under small capitals, each a run of 52px rows between
+     hairlines (the App design, 8 and 9 Oct 2026). */
+  html.is-app:root #app-page.sub { padding-top: max(50px, calc(env(safe-area-inset-top, 0px) + 6px)); }
+  html.is-app:root .app-back { display: flex; align-items: center; gap: 6px; min-height: 44px; margin: 0 0 8px -4px; padding: 0 4px; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: calc(15px * var(--bt)); color: var(--ink); }
+  html.is-app:root .app-back svg { display: block; }
+  html.is-app:root .app-hand { font-family: var(--hand); font-weight: normal; font-size: calc(36px * var(--bt)); line-height: 1.1; margin: 4px 0 22px; text-align: center; }
+  html.is-app:root .app-label { font-size: calc(11px * var(--bt)); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-meta); margin: 28px 0 6px; }
+  html.is-app:root .app-hand + .app-label { margin-top: 0; }
+  html.is-app:root .app-rows { display: flex; flex-direction: column; }
+  html.is-app:root .app-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 0; margin: 0; box-sizing: border-box; border: none; border-top: 1px solid var(--rule); background: none; color: var(--ink); font-family: var(--sans); font-size: calc(16px * var(--bt)); text-align: left; }
+  html.is-app:root .app-rows .app-row:last-child, html.is-app:root .app-select-row { border-bottom: 1px solid var(--rule); }
+  html.is-app:root button.app-row { cursor: pointer; }
+  html.is-app:root button.app-row:disabled { cursor: default; }
+  html.is-app:root .app-row .meta { font-size: calc(15px * var(--bt)); color: var(--ink-meta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html.is-app:root .app-row .lc { text-transform: lowercase; }
+  html.is-app:root .app-row.danger { color: #b22211; }
+  html.is-app:root .app-row svg { flex: 0 0 auto; display: block; color: var(--ink-meta); }
+  html.is-app:root .app-select-row select { flex: 1; min-width: 0; height: 50px; padding: 0; font-family: var(--sans); font-size: calc(16px * var(--bt)); color: var(--ink); background: none; border: none; text-align: left; text-transform: lowercase; -webkit-appearance: none; appearance: none; cursor: pointer; }
+  html.is-app:root .app-x { display: grid; place-items: center; width: 44px; height: 44px; margin-right: -12px; padding: 0; border: none; background: none; color: var(--ink-meta); cursor: pointer; }
+  html.is-app:root .app-add { justify-content: flex-start; gap: 8px; color: var(--link); cursor: pointer; }
+  html.is-app:root .app-add span:first-child { font-size: calc(18px * var(--bt)); line-height: 1; }
+  html.is-app:root .app-add select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  html.is-app:root .app-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 60px; padding: 8px 0; box-sizing: border-box; background: none; border: none; border-top: 1px solid var(--rule); cursor: pointer; text-align: left; color: var(--ink); font-family: var(--sans); }
+  html.is-app:root .app-rows .app-switch-row:last-child { border-bottom: 1px solid var(--rule); }
+  html.is-app:root .app-switch-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: calc(16px * var(--bt)); }
+  html.is-app:root .app-switch-text .sub { font-size: calc(13px * var(--bt)); color: var(--ink-meta); }
+  html.is-app:root .app-sw { flex: 0 0 auto; position: relative; width: 48px; height: 28px; border-radius: 999px; background: var(--panel); border: 1px solid var(--ink); box-sizing: border-box; transition: background-color 180ms ease; }
+  html.is-app:root .app-knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); transition: transform 200ms cubic-bezier(0.32, 0.72, 0, 1), background-color 180ms ease; }
+  html.is-app:root [role="switch"][aria-checked="true"] .app-sw { background: var(--ink); }
+  html.is-app:root [role="switch"][aria-checked="true"] .app-knob { background: var(--panel); transform: translateX(20px); }
+  html.is-app:root .app-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 14px; border: 1px solid var(--ink); border-radius: 999px; overflow: hidden; }
+  html.is-app:root .app-seg button { min-height: 42px; border: none; background: var(--panel); color: var(--ink); font-family: var(--sans); font-size: calc(14px * var(--bt)); cursor: pointer; transition: background-color 180ms ease, color 180ms ease; }
+  html.is-app:root .app-seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+
+  /* ---- Discover ----------------------------------------------------------------
+     A reel over a near-black ground, one show a screen, snapping a show at
+     a time. The search and pills stay over it, see-through at about a 32%
+     dark tint (the App design, 9 Oct 2026); the city round and the page
+     under it step aside. The caption sits over a gradient at the foot. */
+  html.is-app:root #app-disc:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 600; background: #111111; color: #ffffff; font-family: Arial, Helvetica, sans-serif; }
+  html.is-app:root #app-reel { position: absolute; inset: 0; overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  html.is-app:root #app-reel::-webkit-scrollbar { display: none; }
+  html.is-app:root #app-disc.open #app-reel { overflow-y: hidden; }
+  html.is-app:root body[data-app-on="discover"] #phone-top { visibility: visible; background: transparent; }
+  html.is-app:root body[data-app-on="discover"] :is(#app-city-btn, #to-top, #phone-view-btn) { display: none !important; }
+  html.is-app:root body[data-app-on="discover"] #phone-search-slot #search-wrap { background: rgba(28, 28, 30, 0.32); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: none; }
+  html.is-app:root body[data-app-on="discover"] #phone-search-slot #search { color: #ffffff; caret-color: #ffffff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35); }
+  html.is-app:root body[data-app-on="discover"] #phone-search-slot #search::placeholder { color: rgba(255, 255, 255, 0.72); }
+  html.is-app:root body[data-app-on="discover"] #phone-search-slot #search-clear { color: rgba(255, 255, 255, 0.72); }
+  html.is-app:root body.app-disc-open #phone-top { visibility: hidden !important; }
+  html.is-app:root body.app-disc-full #app-tabs { opacity: 0; pointer-events: none; }
+  html.is-app:root #app-tabs { transition: opacity 260ms ease; }
+  html.is-app:root .app-reel-item { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; background: #111111; color: #ffffff; text-align: left; cursor: pointer; scroll-snap-align: start; scroll-snap-stop: always; -webkit-tap-highlight-color: transparent; }
+  html.is-app:root .app-reel-item:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; }
+  /* The picture (and its installation shots) as a strip: one page a swipe
+     when there is more than one, and one transform when the show opens. */
+  html.is-app:root .app-strip { position: absolute; inset: 0; display: flex; overflow-x: hidden; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; transform-origin: 50% 50%; will-change: transform; transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1); }
+  html.is-app:root .app-strip::-webkit-scrollbar { display: none; }
+  html.is-app:root .app-strip:not([data-n="1"]) { overflow-x: auto; }
+  html.is-app:root .app-strip img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; object-position: 50% 50%; display: block; scroll-snap-align: start; scroll-snap-stop: always; }
+  html.is-app:root .app-reel-item.open .app-strip { transform: var(--img-t, none); }
+  html.is-app:root .app-reel-item.open.full .app-strip { transform: none; }
+  html.is-app:root .app-dots { position: absolute; left: 0; right: 0; top: calc(100% - 104px); z-index: 1; display: flex; justify-content: center; gap: 6px; pointer-events: none; animation: er-app-fade-in 200ms ease; transition: top 480ms cubic-bezier(0.32, 0.72, 0, 1); }
+  html.is-app:root .app-dots[hidden] { display: none; }
+  html.is-app:root .app-dots span { width: 6px; height: 6px; border-radius: 50%; background: #ffffff; opacity: 0.45; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); transition: opacity 160ms ease; }
+  html.is-app:root .app-dots span.on { opacity: 1; }
+  html.is-app:root .app-reel-item.open .app-dots { top: var(--dots-open, 50%); }
+  html.is-app:root .app-reel-item.open.full .app-dots { top: calc(100% - 40px); }
+  html.is-app:root .app-cap-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 50%; background: linear-gradient(to top, rgba(17, 17, 17, 0.85), rgba(17, 17, 17, 0)); pointer-events: none; transition: opacity 260ms ease; }
+  html.is-app:root .app-cap { position: absolute; left: 20px; right: 20px; bottom: 112px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; transition: opacity 220ms ease; }
+  html.is-app:root .app-reel-item.open :is(.app-cap, .app-cap-shade) { opacity: 0; }
+  html.is-app:root .app-cap-artists, html.is-app:root .app-cap-title { font-family: var(--serif, 'Times New Roman', Times, serif); font-size: calc(24px * var(--bt)); line-height: 1.2; letter-spacing: -0.005em; text-wrap: balance; }
+  html.is-app:root .app-cap-title { font-style: italic; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  html.is-app:root .app-cap-title i { font-style: italic; }
+  html.is-app:root .app-cap-meta { font-size: calc(14px * var(--bt)); line-height: 1.5; color: #e8e8e8; }
+  html.is-app:root .app-cap-meta:first-of-type { margin-top: 6px; }
+  /* The details under the open picture: artist and title full width, the
+     venue, place, dates and opening line, then the press-release row with
+     the action buttons at its right, the press text in full when there is
+     one (the App design, 9 Oct 2026). */
+  html.is-app:root .app-info { position: absolute; left: 0; right: 0; top: var(--info-top, 60%); bottom: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 22px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; opacity: 0; transform: translateY(14px); pointer-events: none; cursor: default; transition: opacity 160ms ease, transform 200ms ease; }
+  html.is-app:root .app-reel-item.open .app-info { opacity: 1; transform: none; pointer-events: auto; transition: opacity 420ms ease 220ms, transform 560ms cubic-bezier(0.22, 1, 0.36, 1) 180ms; }
+  html.is-app:root .app-reel-item.open.full .app-info { opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+  html.is-app:root .app-info-artists, html.is-app:root .app-info-title { font-family: var(--serif, 'Times New Roman', Times, serif); font-size: calc(26px * var(--bt)); line-height: 1.18; text-wrap: balance; }
+  html.is-app:root .app-info-title { font-style: italic; }
+  html.is-app:root .app-info-meta { display: flex; flex-direction: column; gap: 2px; margin-top: 12px; font-size: calc(15px * var(--bt)); line-height: 1.45; color: #e8e8e8; }
+  html.is-app:root .app-info-meta .v { color: #ffffff; }
+  html.is-app:root .app-info-meta .opening { color: #7fd492; }
+  html.is-app:root .app-info-acts { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+  html.is-app:root .app-press-link { display: flex; align-items: center; gap: 4px; min-height: 40px; font-size: calc(15px * var(--bt)); color: #ffffff; text-decoration: underline; text-underline-offset: 3px; }
+  html.is-app:root .app-press-link svg { display: block; }
+  html.is-app:root .app-info-btns { display: flex; gap: 0; margin-left: auto; margin-right: -10px; }
+  html.is-app:root .app-info-btns button { flex: 0 0 auto; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: none; border-radius: 50%; background: transparent; color: #ffffff; cursor: pointer; transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root .app-info-btns button:active { transform: scale(0.92); }
+  html.is-app:root .app-info-btns svg { display: block; }
+  html.is-app:root .app-press-text { margin-top: 10px; font-size: calc(14.5px * var(--bt)); line-height: 1.55; color: #d6d6d6; white-space: pre-line; text-wrap: pretty; }
+  html.is-app:root .app-share-note { font-size: calc(13px * var(--bt)); color: rgba(235, 235, 245, 0.72); margin-top: 8px; animation: er-app-fade-in 160ms ease; }
+  html.is-app:root .app-share-note[hidden] { display: none; }
+  html.is-app:root .app-info .share-fallback { display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 6px; }
+  html.is-app:root .app-info .share-fallback input { flex: 1; min-width: 0; height: 36px; padding: 0 10px; border: 1px solid rgba(255, 255, 255, 0.3); background: transparent; color: #ffffff; font-size: 13px; }
+  html.is-app:root .app-info .share-fallback a { color: #ffffff; font-size: 14px; }
+  /* Back, over the open show, where the search was. */
+  html.is-app:root #app-disc-back:not([hidden]) { position: absolute; top: calc(max(10px, env(safe-area-inset-top, 0px)) + 4px); left: 14px; z-index: 11; display: flex; align-items: center; gap: 4px; height: 34px; padding: 0 14px 0 10px; border: none; border-radius: 999px; background: rgba(28, 28, 30, 0.32); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: #ffffff; cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: calc(14px * var(--bt)); animation: er-app-fade-in 260ms ease 160ms both; transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root #app-disc-back:active { transform: scale(0.95); }
+  html.is-app:root #app-disc-back svg { display: block; }
+  /* Nothing left: "No Results" in the hand, and a white reset. */
+  html.is-app:root #app-disc-empty:not([hidden]) { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 0 40px; text-align: center; pointer-events: none; animation: er-app-fade-in 220ms ease; }
+  html.is-app:root .app-no-results { font-family: 'Exhibition Radar Hand', 'Times New Roman', Times, serif; font-size: calc(44px * var(--bt)); line-height: 1.05; color: #ffffff; }
+  html.is-app:root #app-disc-reset { pointer-events: auto; height: 40px; padding: 0 18px; border: none; border-radius: 999px; background: #ffffff; color: #111111; cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: calc(15px * var(--bt)); transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root #app-disc-reset:active { transform: scale(0.95); }
+
+  /* ---- The profile ----------------------------------------------------------
+     The dish centred over "Hi <name>" in the hand, the email under it, then
+     the top-down list: serif titles, grey subtitles, rules and chevrons,
+     the gallery night's row leading with its small map (the App design,
+     8 and 9 Oct 2026). */
+  html.is-app:root .app-hi { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; margin: 6px 0 30px; }
+  html.is-app:root .app-dish { display: block; width: auto; height: 88px; margin-bottom: 6px; }
+  html.is-app:root[data-theme="dark"] .app-dish, html.is-app:root[data-theme="klein"] .app-dish { filter: invert(1); }
+  html.is-app:root .app-hi-name { font-family: var(--hand); font-size: calc(46px * var(--bt)); line-height: 1.05; }
+  html.is-app:root .app-hi-mail { font-size: calc(14px * var(--bt)); color: var(--ink-meta); }
+  html.is-app:root .app-list { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+  html.is-app:root .app-list-row { display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; min-height: 76px; padding: 14px 0; margin: 0; background: none; border: none; border-bottom: 1px solid var(--rule); cursor: pointer; text-align: left; color: var(--ink); font-family: var(--sans); transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  html.is-app:root .app-list-row:active { transform: scale(0.98); }
+  html.is-app:root .app-night-art { display: block; width: 100%; height: 150px; border-radius: 14px; background: #faf9f5; }
+  html.is-app:root .app-list-text { display: flex; align-items: center; gap: 14px; }
+  html.is-app:root .app-list-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  html.is-app:root .app-list-main .t { font-family: var(--serif); font-size: calc(25px * var(--bt)); line-height: 1.15; letter-spacing: -0.005em; }
+  html.is-app:root .app-list-main .s { font-size: calc(13.5px * var(--bt)); line-height: 1.4; color: var(--ink-meta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html.is-app:root .app-list-text svg { flex: 0 0 auto; display: block; color: var(--ink-meta); }
+  html.is-app:root .app-text-link { align-self: flex-start; margin-top: 14px; min-height: 44px; padding: 0; background: none; border: none; font-family: var(--sans); font-size: calc(14px * var(--bt)); color: var(--ink-meta); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  /* A pushed page slides in from the right (380ms). */
+  html.is-app:root #app-page.app-push { animation: er-app-push-in 380ms cubic-bezier(0.32, 0.72, 0, 1); }
+  @keyframes er-app-push-in { from { transform: translateX(100%); } to { transform: none; } }
+  html.is-app:root .app-h2 { font-family: var(--serif); font-size: calc(22px * var(--bt)); line-height: 1.2; letter-spacing: -0.005em; font-weight: normal; margin: 26px 0 10px; }
+  html.is-app:root .app-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  html.is-app:root .app-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font-family: var(--sans); font-size: calc(14px * var(--bt)); cursor: pointer; transition: transform 140ms cubic-bezier(0.3, 0.7, 0.2, 1), background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+  html.is-app:root .app-chip:active { transform: scale(0.94); }
+  html.is-app:root .app-chip[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  html.is-app:root .app-who { min-height: 40px; padding-left: 6px; }
+  html.is-app:root .app-who .i { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--rule); display: grid; place-items: center; font-family: var(--serif); font-size: calc(14px * var(--bt)); }
+  html.is-app:root .app-who[aria-pressed="true"] .i { border-color: var(--panel); }
+  html.is-app:root .app-pill-btn.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  html.is-app:root .app-pill-btn:disabled { opacity: 0.5; }
+
+  /* ---- Plan a Gallery Night --------------------------------------------------- */
+  html.is-app:root .app-night-map { position: relative; height: 220px; margin: 0 -16px 4px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); overflow: hidden; background: #faf9f5; }
+  html.is-app:root .app-night-map[hidden] { display: none; }
+  html.is-app:root #app-night-map { width: 100%; height: 100%; }
+  html.is-app:root #app-night-map .maplibregl-canvas { outline: none; }
+  html.is-app:root .app-night-pin svg { display: block; }
+  html.is-app:root .app-night-walk { font-size: calc(12.5px * var(--bt)); color: var(--ink-meta); margin: 8px 0 18px; }
+  html.is-app:root .app-stops, html.is-app:root .app-saved { display: flex; flex-direction: column; }
+  html.is-app:root .app-stop-row { display: flex; align-items: center; gap: 12px; min-height: 64px; border-top: 1px solid var(--rule); }
+  html.is-app:root .app-stops .app-stop-row:last-child, html.is-app:root .app-saved .app-saved-row:last-child, html.is-app:root .app-empty-row { border-bottom: 1px solid var(--rule); }
+  html.is-app:root .app-stop-row .n { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--panel); font-size: calc(12px * var(--bt)); font-weight: 700; display: grid; place-items: center; }
+  html.is-app:root .app-stop-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  html.is-app:root .app-stop-text .t { font-family: var(--serif); font-style: italic; font-size: calc(16.5px * var(--bt)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html.is-app:root .app-stop-text .v { font-size: calc(13px * var(--bt)); color: var(--ink-meta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html.is-app:root .app-stop-acts { flex: 0 0 auto; display: flex; align-items: center; margin-right: -10px; }
+  html.is-app:root .app-stop-acts button { width: 36px; height: 44px; display: grid; place-items: center; padding: 0; background: none; border: none; cursor: pointer; color: var(--ink); }
+  html.is-app:root .app-stop-acts button:disabled { opacity: 0.25; cursor: default; }
+  html.is-app:root .app-stop-acts .x { color: var(--ink-meta); }
+  html.is-app:root .app-stop-acts svg { display: block; }
+  html.is-app:root .app-saved-row { display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: 1px solid var(--rule); }
+  html.is-app:root .app-empty-row { border-top: 1px solid var(--rule); padding: 16px 0; font-size: calc(14px * var(--bt)); line-height: 1.5; color: var(--ink-meta); }
+  html.is-app:root .app-send-row { margin-top: 28px; }
+  html.is-app:root .app-send { height: 48px; font-size: calc(15px * var(--bt)); box-shadow: none; background: var(--ink); color: var(--panel); }
+  html.is-app:root .app-send-row .share-fallback { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+  html.is-app:root .app-send-row .share-fallback input { flex: 1; min-width: 0; height: 36px; padding: 0 10px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); font-size: 13px; }
+  html.is-app:root #app-night-status { margin-top: 10px; }
+
+  /* ---- Communities: a friend's plan as a card (the design's one bordered
+     box), then the friends list. ---------------------------------------- */
+  html.is-app:root .app-plan-card { border: 1px solid var(--ink); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+  html.is-app:root .app-plan-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  html.is-app:root .app-plan-head .t { font-family: var(--serif); font-size: calc(19px * var(--bt)); line-height: 1.2; }
+  html.is-app:root .app-plan-card .m { flex: 0 0 auto; font-size: calc(13px * var(--bt)); color: var(--ink-meta); }
+  html.is-app:root .app-plan-stops { font-size: calc(13px * var(--bt)); line-height: 1.5; color: var(--ink-sub, #555555); }
+  html.is-app:root .app-plan-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  html.is-app:root .app-plan-foot .app-pill-btn { border-color: var(--ink); padding: 0 16px; }
+
+  /* ---- Following: each gallery between rules, its shows as 64px tiles. ---- */
+  html.is-app:root .app-follow-row { border-top: 1px solid var(--ink); padding: 14px 0 18px; display: flex; flex-direction: column; gap: 10px; }
+  html.is-app:root .app-follow-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  html.is-app:root .app-follow-name { min-width: 0; }
+  html.is-app:root .app-follow-name .t { font-family: var(--serif); font-size: calc(20px * var(--bt)); line-height: 1.2; }
+  html.is-app:root .app-follow-row .m { font-size: calc(13px * var(--bt)); color: var(--ink-meta); }
+  html.is-app:root .app-follow-head .app-pill-btn { min-height: 34px; font-size: calc(13.5px * var(--bt)); }
+  html.is-app:root .app-follow-show { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; }
+  html.is-app:root .app-tile { position: relative; width: 64px; height: 64px; display: grid; place-items: center; background: var(--ground-img, #f4f4f4); color: var(--ink-meta); font-family: var(--serif); font-size: 26px; overflow: hidden; }
+  html.is-app:root .app-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  html.is-app:root .app-follow-show-text { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  html.is-app:root .app-follow-show-text .t { font-family: var(--serif); font-size: calc(16px * var(--bt)); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ---- The partner pages inside the app --------------------------------------
+     for-galleries.html's sections and partner-request.html's form, laid
+     out for a phone (the "Become a Partner Phone" design, 8 Oct 2026): one
+     column, 15px body, full-width buttons, the steps on a vertical line. */
+  html.is-app:root .app-partner { font-family: var(--sans); color: var(--ink); line-height: 1.5; }
+  html.is-app:root .app-partner h1 { font-family: var(--serif); font-weight: normal; font-size: calc(28px * var(--bt)); line-height: 1.15; margin: 6px 0 14px; text-align: center; }
+  html.is-app:root .app-partner h2 { font-family: var(--serif); font-weight: normal; font-size: calc(22px * var(--bt)); line-height: 1.2; margin: 30px 0 14px; }
+  html.is-app:root .app-partner .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 0 26px; }
+  html.is-app:root .app-partner .lede { font-size: calc(15px * var(--bt)); line-height: 1.6; color: var(--ink-sub, #555555); margin: 0 0 22px; text-wrap: pretty; }
+  html.is-app:root .app-partner .pill { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 46px; padding: 0 24px; box-sizing: border-box; border: none; border-radius: 999px; background: var(--ink); color: var(--panel); font-family: var(--sans); font-size: calc(15px * var(--bt)); text-decoration: none; cursor: pointer; }
+  html.is-app:root .app-partner figure { margin: 0 -16px; }
+  html.is-app:root .app-partner .map { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: #ffffff; }
+  html.is-app:root .app-partner .map img { display: block; width: 100%; height: auto; }
+  html.is-app:root .app-partner figcaption { padding: 8px 16px 0; font-size: calc(11.5px * var(--bt)); line-height: 1.6; color: var(--ink-meta); text-align: center; }
+  html.is-app:root .app-partner .deal, html.is-app:root .app-partner .rows { display: flex; flex-direction: column; }
+  html.is-app:root .app-partner .deal > div, html.is-app:root .app-partner .rows > div { border-top: 1px solid var(--rule); padding: 16px 0; display: flex; flex-direction: column; gap: 6px; }
+  html.is-app:root .app-partner .rows > div:last-child { border-bottom: 1px solid var(--rule); }
+  html.is-app:root .app-partner .t { font-size: calc(17px * var(--bt)); line-height: 1.35; }
+  html.is-app:root .app-partner .body { font-size: calc(15px * var(--bt)); line-height: 1.6; color: var(--ink-sub, #555555); text-wrap: pretty; }
+  html.is-app:root .app-partner .intro { margin: -4px 0 20px; font-size: calc(15px * var(--bt)); line-height: 1.6; color: var(--ink-sub, #555555); }
+  html.is-app:root .app-partner ol { list-style: none; margin: 0; padding: 0 0 0 20px; border-left: 1px solid var(--rule); display: flex; flex-direction: column; gap: 22px; }
+  html.is-app:root .app-partner ol li { position: relative; display: flex; flex-direction: column; gap: 6px; }
+  html.is-app:root .app-partner .dot { position: absolute; left: -25px; top: 7px; display: block; width: 9px; height: 9px; border-radius: 50%; }
+  html.is-app:root .app-partner ol .n { color: var(--ink-meta); margin-right: 8px; }
+  html.is-app:root .app-partner .ask { margin-top: 30px; padding: 30px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  html.is-app:root .app-partner .ask h2 { margin: 0 0 18px; }
+  html.is-app:root .app-partner .ask p { margin: 18px 0 8px; font-size: calc(14px * var(--bt)); color: var(--ink-sub, #555555); }
+  html.is-app:root .app-partner .big-mail { display: block; font-family: var(--hand); font-size: calc(26px * var(--bt)); line-height: 1.1; overflow-wrap: anywhere; color: var(--link, #0000ff); }
+  html.is-app:root .app-partner .ask .small { margin: 18px 0 0; font-size: calc(13px * var(--bt)); color: var(--ink-meta); }
+  html.is-app:root .app-partner a { color: var(--link, #0000ff); }
+  /* The request form. */
+  html.is-app:root .app-request form { display: flex; flex-direction: column; gap: 22px; }
+  html.is-app:root .app-request label { display: flex; flex-direction: column; gap: 7px; }
+  html.is-app:root .app-request .cap { font-size: calc(9.5px * var(--bt)); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-meta); }
+  html.is-app:root .app-request input { width: 100%; box-sizing: border-box; background: none; border: none; border-bottom: 1px solid var(--rule); border-radius: 0; padding: 0 0 8px; font-family: var(--sans); font-size: calc(16px * var(--bt)); color: var(--ink); }
+  html.is-app:root .app-request input:focus { outline: none; border-color: var(--ink); }
+  html.is-app:root .app-request .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  html.is-app:root .app-request .hint { font-size: calc(11.5px * var(--bt)); line-height: 1.5; color: var(--ink-meta); }
+  html.is-app:root .app-request .err { font-size: calc(11.5px * var(--bt)); color: #b22211; }
+  html.is-app:root .app-request .err[hidden], html.is-app:root .app-request .banner[hidden], html.is-app:root .app-request [hidden] { display: none; }
+  html.is-app:root .app-request .banner { border-left: 2px solid #b22211; padding: 2px 0 2px 12px; font-size: calc(12.5px * var(--bt)); line-height: 1.6; color: #b22211; }
+  html.is-app:root .app-request .btn { width: 100%; min-height: 48px; background: var(--ink); color: var(--panel); border: none; border-radius: 999px; font-family: var(--sans); font-size: calc(14px * var(--bt)); letter-spacing: 0.04em; cursor: pointer; }
+  html.is-app:root .app-request .btn:disabled { opacity: 0.5; }
+  html.is-app:root .app-request .direct { border-top: 1px solid var(--rule); padding-top: 18px; font-size: calc(14px * var(--bt)); line-height: 1.65; color: var(--ink-sub, #555555); }
+  html.is-app:root .app-request .direct strong { display: block; color: var(--ink); margin-bottom: 2px; }
+  html.is-app:root .app-request .foot { text-align: center; font-size: calc(12.5px * var(--bt)); line-height: 1.6; color: var(--ink-meta); }
+  html.is-app:root .app-request .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  html.is-app:root .app-request .done p { margin: 0 0 14px; font-size: calc(14px * var(--bt)); line-height: 1.7; color: var(--ink-sub, #555555); text-align: center; text-wrap: pretty; }
+
+  /* ---- Big text --------------------------------------------------------------
+     Every text size in the app up about 22% (the App design, 9 Oct 2026);
+     rows grow to fit, as they use min-heights. The app's own pieces scale
+     by --bt above; the phone's shows and sheets are sized here. */
+  html.is-app:root[data-bigtext] .cap-artists, html.is-app:root[data-bigtext] .cap-title { font-size: 22px; }
+  html.is-app:root[data-bigtext] .cap-meta { font-size: 17px; }
+  html[data-cols="1"].is-app:root[data-bigtext] :is(.cap-artists, .cap-title) { font-size: 24.5px; }
+  html[data-cols="1"].is-app:root[data-bigtext] .cap-meta { font-size: 18.5px; }
+  html[data-cols="3"].is-app:root[data-bigtext] :is(.cap-artists, .cap-title) { font-size: 17px; }
+  html[data-cols="3"].is-app:root[data-bigtext] .cap-meta { font-size: 14.5px; }
+  html.is-app:root[data-bigtext] :is(#phone-venue-body, #phone-detail) .detail-title { font-size: 36.5px; }
+  html.is-app:root[data-bigtext] :is(#phone-venue-body, #phone-detail) .detail-body { font-size: 19px; }
+  html.is-app:root[data-bigtext] :is(#phone-venue-body, #phone-detail-body) { font-size: 122%; }
+  html.is-app:root[data-bigtext] #phone-search-slot #search { font-size: 19.5px; }
+  html.is-app:root[data-bigtext] .app-cities [data-city] { font-size: 19.5px; }
+  html.is-app:root[data-bigtext] .app-cities .drop-label, html.is-app:root[data-bigtext] .app-cities .home { font-size: 16px; }
+  html.is-app:root[data-bigtext] :is(.app-h) { font-size: 36.5px; }
+  html.is-app:root[data-bigtext] :is(.app-sub, .app-switch, .app-switch button, .app-link) { font-size: 18.5px; }
+  html.is-app:root[data-bigtext] :is(.app-field input, .app-btn, .app-homes button) { font-size: 19.5px; }
+  html.is-app:root[data-bigtext] :is(.app-handle) { font-size: 22px; }
+  html.is-app:root[data-bigtext] :is(.app-email, .app-pill-btn, .app-site-out button, .app-stop .v, .app-want .v, .app-friend .v, .app-or, .app-quiet, .app-night-head span + span) { font-size: 16.5px; }
+  html.is-app:root[data-bigtext] :is(.app-sec h2, .app-night-head span:first-child) { font-size: 27px; }
+  html.is-app:root[data-bigtext] :is(.app-want .t) { font-size: 20.5px; }
+  html.is-app:root[data-bigtext] :is(.app-stop .t, .app-site button, .app-follows span, .app-friend > span:last-child, .app-invite) { font-size: 19.5px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.is-app:root :is(.app-menu, #app-quick, .app-dots, .app-share-note, #app-disc-back, #app-disc-empty, #app-page.app-push) { animation: none !important; }
+    html.is-app:root :is(.app-pill, .app-pill > svg, #app-pins, #app-pins button, #app-cols-slot #app-cols-btn, #app-filters-grid, .app-sw, .app-knob, .app-seg button, .app-strip, .app-info, .app-cap, .app-cap-shade, .app-dots, #app-tabs) { transition: none !important; }
+  }
+}
